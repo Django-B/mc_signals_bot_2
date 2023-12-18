@@ -1,11 +1,12 @@
 from typing import NamedTuple
+import datetime
 
 
 class Game(NamedTuple):
     message_id: int
 
-    game_date: str
-    game_time: str
+    game_date: datetime.date
+    game_time: datetime.time
 
     p1_name: str
     p2_name: str
@@ -21,15 +22,14 @@ class Game(NamedTuple):
     r_coef: float
 
     min_num_total: float
-    mid_num_total: float
-    max_num_total: float
-
     min_num_total_min_coef: float
     min_num_total_max_coef: float
-
+    
+    mid_num_total: float
     mid_num_total_min_coef: float
     mid_num_total_max_coef: float
 
+    max_num_total: float
     max_num_total_min_coef: float
     max_num_total_max_coef: float
 

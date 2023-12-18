@@ -1,0 +1,18 @@
+[main] 
+api_id = 6024458
+api_hash = ef40f2f3d50add35b31cf8292d00689e
+bot_token = 
+target_channel_url = https://t.me/statamk10
+bot_owners = django_999
+db_name = db.sqlite3
+check_interval = 5
+
+[test]
+api_id =  6024458
+api_hash = ef40f2f3d50add35b31cf8292d00689e
+bot_token = 
+target_channel_url = https://t.me/your_test_channel
+bot_owners = django_999
+db_name = test_db.sqlite3
+check_interval = 5
+

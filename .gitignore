@@ -1,0 +1,8 @@
+__pycache__/
+env/
+config.ini
+test.py
+*.sqlite3
+*.sqlite
+*.db
+*.session

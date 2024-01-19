@@ -82,9 +82,3 @@ CREATE TABLE IF NOT EXISTS game (
     round9_time text,
     round9_total text
 );
-
-CREATE TABLE IF NOT EXISTS owner (
-    user_id INTEGER PRIMARY KEY,
-    username TEXT
-);
-

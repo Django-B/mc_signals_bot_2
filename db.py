@@ -12,10 +12,24 @@ DB_NAME = config['db_name']
 BOT_OWNERS = config['bot_owners'].split()
 # CHANNEL_NAME = config['target_channel_url'].split('/')[-1]
 GAME_TABLE_NAME = 'game'
-OWNER_TABLE_NAME = 'owner'
+USERS_TABLE_NAME = 'bot_user'
 
 
-async def insert_game(game: Game):
+async def create_tables():
+    async with aiosqlite.connect(DB_NAME) as db:
+        cursor = await db.cursor()
+
+        with open('game.sql') as f:
+            game_table_query = f.read()
+        with open('owner.sql') as f:
+            owner_table_query = f.read()
+
+        await cursor.execute(game_table_query)
+        await cursor.execute(owner_table_query)
+
+        await db.commit()
+
+async def insert_message(game: Game):
     '''Cоздает запись результата игры в БД'''
     async with aiosqlite.connect(DB_NAME) as db:
         cursor = await db.cursor()
@@ -42,9 +56,9 @@ async def insert_user(user_id, username):
 
         # Вставка данных сообщения в таблицу
         await cursor.execute('''
-            INSERT OR IGNORE INTO users (user_id, username)
+            INSERT OR IGNORE INTO {} (user_id, username)
             VALUES (?, ?)
-        ''', (user_id, username))
+        '''.format(USERS_TABLE_NAME), (user_id, username))
 
         await db.commit()
 
@@ -65,7 +79,7 @@ async def delete_game_by_note_id(note_id: int):
         await cursor.close()
     return deleted_rows_count
 
-async def delete_nlast_games(delete_messages_count=5) -> int:
+async def delete_last_messages(delete_messages_count=5) -> int:
     messages_history = await get_messages()
     last_message_id = messages_history[-1]['id']
     for _ in range(delete_messages_count):
@@ -82,7 +96,7 @@ async def get_messages() -> list:
         cursor = await db.cursor()
 
         # Получение всех сообщений из таблицы
-        await cursor.execute(f'SELECT * FROM {GAME_TABLE_NAME} WHERE message_text IS NOT NULL')
+        await cursor.execute(f'SELECT * FROM {GAME_TABLE_NAME}')
         messages = await cursor.fetchall()
 
         return list(messages)
@@ -93,17 +107,15 @@ async def get_users() -> list:
         cursor = await db.cursor()
 
         # Получение всех сообщений из таблицы
-        await cursor.execute('SELECT * FROM users')
+        await cursor.execute('SELECT * FROM {}'.format(USERS_TABLE_NAME))
         users = await cursor.fetchall()
 
         return list(users)
 
 async def init_db():
     print('START DATABASE INIT')
-    print('CREATE CHANNEL MESSAGES HISTORY TABLE')
-    await create_channel_messages_table()
-    print('CREATE USERS TABLE')
-    await create_users_table()
+    print('CREATE TABLES')
+    await create_tables()
     print('INSERT USERS FROM CONFIG')
     await insert_users_from_config()
     print('DATABASE INIT SUCCESSFUL')

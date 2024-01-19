@@ -32,17 +32,24 @@ FYes -4.23    FNo -1.22
 async def extract_date_and_time(
     message_text: str
 ) -> tuple[datetime.date, datetime.time] | tuple[None, None]:
-    regex = r'(?P<time>\d\d:\d\d) (?P<date>\d\d-\d\d-\d\d\d\d)'
-    res = re.search(regex, message_text)
-    if not res: return None, None
+    regex1 = r'(?P<time>\d\d:\d\d) (?P<date>\d\d-\d\d-\d\d\d\d)'
+    regex2 = r'(?P<time>\d\d:\d\d) (?P<date>\d\d\d\d-\d\d-\d\d)'
+    res1 = re.search(regex1, message_text)
+    res2 = re.search(regex2, message_text)
+    res = res1
+    if not res1:
+        if not res2:
+            return None, None
+        else:
+            res = res2
     str_time, str_date = res.groups()
     time = datetime.datetime.strptime(str_time, "%H:%M").time()
-    date = datetime.datetime.strptime(str_date, "%d-%m-%Y").date()
+    date = datetime.datetime.strptime(str_date, "%Y-%m-%d").date()
 
     return date, time
 
 async def extract_p_names(message_text: str) -> tuple[str, str] | tuple[None, None]:
-    regex = '#(?P<p1>[А-Яа-я]+) #(?P<p2>[А-Яа-я]+)'
+    regex = '#(?P<p1>[А-Яа-я]+).*#(?P<p2>[А-Яа-я]+)'
     res = re.search(regex, message_text)
     if not res: return None, None
     return res.groups() 
@@ -82,9 +89,10 @@ async def extract_nums_totals(
         (max_num_total, max_num_total_min_coef, max_num_total_max_coef)
     )
     '''
-    regex = r'(?P<total>\d+\.\d+) +\((?P<min_coef>\d+\.\d+) +. +(?P<max_coef>\d+\.\d+)\)'
+    # regex = r'(?P<total>\d+\.\d+) +\((?P<min_coef>\d+\.\d+) +. +(?P<max_coef>\d+\.\d+)\)'
+    regex = r'/(?P<total>\d+(\.\d+)*) +\((?P<min_coef>\d+(\.\d+)*) +. +(?P<max_coef>\d+(\.\d+)*)\)'
     res = re.findall(regex, message_text)
-    if not res: return None, None, None
+    if not res: return [[None for x in range(3)], [None for x in range(3)], [None for x in range(3)], ]
     return tuple(map(lambda x: tuple([float(i) for i in x]), res))
 
 async def extract_f(message_text: str) -> tuple[float, float] | tuple[None, None]:
@@ -116,38 +124,31 @@ async def extract_round_data(message_text: str, round_num: int) -> dict:
 
 async def extract_game_data(message) -> Game | None: # type: ignore
     message_id = message.id
-    date, time = await extract_date_and_time(message.text)
-    p1, p2 = await extract_p_names(message.text)
-    p1_game_win_coef, p2_game_win_coef  = await extract_p_game_win_coefs(message.text)
-    p1_round_win_coef, p2_round_win_coef  = await extract_p_round_win_coefs(message.text)
-    f, b, r = await extract_fbr(message.text)
-    min_num_totals, mid_num_totals, max_num_totals = await extract_nums_totals(message.text)
-    fyes, fno = await extract_f(message.text)
-    p1_wins, p2_wins = await extract_p_wins(message.text)
-    round1 = await extract_round_data(message.text, 1)
-    round2 = await extract_round_data(message.text, 2)
-    round3 = await extract_round_data(message.text, 3)
-    round4 = await extract_round_data(message.text, 4)
-    round5 = await extract_round_data(message.text, 5)
-    round6 = await extract_round_data(message.text, 6)
-    round7 = await extract_round_data(message.text, 7)
-    round8 = await extract_round_data(message.text, 8)
-    round9 = await extract_round_data(message.text, 9)
+    message_text = message.raw_text
+    date, time = await extract_date_and_time(message_text)
+    p1, p2 = await extract_p_names(message_text)
+    p1_game_win_coef, p2_game_win_coef  = await extract_p_game_win_coefs(message_text)
+    p1_round_win_coef, p2_round_win_coef  = await extract_p_round_win_coefs(message_text)
+    f, b, r = await extract_fbr(message_text)
+    min_num_totals, mid_num_totals, max_num_totals = await extract_nums_totals(message_text)
+    fyes, fno = await extract_f(message_text)
+    p1_wins, p2_wins = await extract_p_wins(message_text)
+    round1 = await extract_round_data(message_text, 1)
+    round2 = await extract_round_data(message_text, 2)
+    round3 = await extract_round_data(message_text, 3)
+    round4 = await extract_round_data(message_text, 4)
+    round5 = await extract_round_data(message_text, 5)
+    round6 = await extract_round_data(message_text, 6)
+    round7 = await extract_round_data(message_text, 7)
+    round8 = await extract_round_data(message_text, 8)
+    round9 = await extract_round_data(message_text, 9)
     
     if not all([
         date,
         time,
         p1,
-        p1,
-        p1_game_win_coef,
-        p2_game_win_coef,
-        p1_round_win_coef,
-        p2_round_win_coef,
-        f, b, r,
-        min_num_totals, 
-        mid_num_totals,
-        max_num_totals,
-        fyes, fno
+        p2,
+        round1.values()
     ]):
         return None
 

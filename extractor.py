@@ -6,28 +6,25 @@ from named_tuples import Game
 from pprint import pprint
 
 
-test_message = '''18:45 18-12-2023 #N1186 #L2
-#ТреморДиВора
-#Тремор #ДиВора
-   P1m|P2m - 1.15|5.43
-P1/P2 - 1.48/2.73
-FBR - 4.23 | 6.28 | 1.43
-#t7v8     atv : 32.83
-TimeStat(Больше-Меньше:O-U)
-25.5 (1.22 - 4.18)   #m25
-32.5 (1.88 - 2.025)   #s32
-40.5 (3.86 - 1.25)   #b40
-FYes -4.23    FNo -1.22
+test_message_text = '''Mortal Kombat X
+04:10 2020-03-12
+#Хищник - #СоняБлейд - 1014
+P1/P2 - 2.096/1.825
+FBR
+3.37 | 4.44 | 1.865
+TIME(M-B)
+27.5 (4.44 - 1.2)
+36.5 (1.995 - 1.904)
+44.5 (1.24 - 4)
 
-5:2
-1. P1--R--29  TM
-2. P2--F--32  TM
-3. P1--R--53  TBB
-4. P1--R--30  TM
-5. P2--R--33  TB
-6. P1--B--43  TBB
-7. P1--R--41  TBB 
-   #T7'''
+2:5
+1. P2-R-46
+2. P2-R-21
+3. P2-R-40
+4. P1-R-36
+5. P1-F-40
+6. P2-R-36
+7. P2-R-37'''
 
 async def extract_date_and_time(
     message_text: str
@@ -42,11 +39,17 @@ async def extract_date_and_time(
             return None, None
         else:
             res = res2
+            str_time, str_date = res.groups()
+            time = datetime.datetime.strptime(str_time, "%H:%M").time()
+            date = datetime.datetime.strptime(str_date, "%Y-%m-%d").date()
+            return str(date), str(time)
+
     str_time, str_date = res.groups()
     time = datetime.datetime.strptime(str_time, "%H:%M").time()
-    date = datetime.datetime.strptime(str_date, "%Y-%m-%d").date()
+    date = datetime.datetime.strptime(str_date, "%d-%m-%Y").date()
+    # date = datetime.datetime.strptime(str_date, "%Y-%m-%d").date()
 
-    return date, time
+    return str(date), str(time)
 
 async def extract_p_names(message_text: str) -> tuple[str, str] | tuple[None, None]:
     regex = '#(?P<p1>[А-Яа-я]+).*#(?P<p2>[А-Яа-я]+)'
@@ -89,10 +92,10 @@ async def extract_nums_totals(
         (max_num_total, max_num_total_min_coef, max_num_total_max_coef)
     )
     '''
-    # regex = r'(?P<total>\d+\.\d+) +\((?P<min_coef>\d+\.\d+) +. +(?P<max_coef>\d+\.\d+)\)'
-    regex = r'/(?P<total>\d+(\.\d+)*) +\((?P<min_coef>\d+(\.\d+)*) +. +(?P<max_coef>\d+(\.\d+)*)\)'
+    regex = r'(?P<total>[0-9]+(?:[.,][0-9]*)?).*\((?P<min_coef>[0-9]+(?:[,.]?[0-9]*)?)\D+(?P<max_coef>[0-9]+(?:[,.][0-9]*)?)\)'
     res = re.findall(regex, message_text)
-    if not res: return [[None for x in range(3)], [None for x in range(3)], [None for x in range(3)], ]
+    if not res: return [None, None, None]
+    if len(res) != 3: return [None, None, None]
     return tuple(map(lambda x: tuple([float(i) for i in x]), res))
 
 async def extract_f(message_text: str) -> tuple[float, float] | tuple[None, None]:
@@ -110,7 +113,8 @@ async def extract_p_wins(message_text: str) -> tuple[int, int] | tuple[None, Non
     return tuple(map(int, res.groups()))
 
 async def extract_round_data(message_text: str, round_num: int) -> dict:
-    regex = r'{}\. +(?P<winner>[A-z\d]+).+(?P<finish>[A-z]+).+(?P<time>[\d]+) +(?P<total>[A-z]+)'.format(round_num)
+    # regex = r'{}\. +(?P<winner>[A-z\d]+).+(?P<finish>[A-z]+).+(?P<time>[\d]+) +(?P<total>[A-z]+)'.format(round_num)
+    regex = r'{}.*(?P<winner>[A-z][12]).+(?P<finish>[A-z])\D+(?P<time>[0-9]+)([^A-z\n]+(?P<total>[A-z]+))?'.format(round_num)
     res = re.search(regex, message_text)
     if not res:
         return {'winner':None, 'finish':None,'time':None, 'total':None}
@@ -148,7 +152,8 @@ async def extract_game_data(message) -> Game | None: # type: ignore
         time,
         p1,
         p2,
-        round1.values()
+        round1.values(),
+        min_num_totals, mid_num_totals, max_num_totals
     ]):
         return None
 
@@ -220,8 +225,14 @@ async def extract_game_data(message) -> Game | None: # type: ignore
 
 
 async def main():
-    a = await extract_game_data(test_message)
-    pprint(a)
+    from dataclasses import dataclass
+    @dataclass
+    class message:
+        id: int
+        raw_text: str
+    test_message = message(id=1, raw_text=test_message_text)
+    a = await extract_nums_totals(test_message_text)
+    # print(a)
     
 
 if __name__=='__main__':

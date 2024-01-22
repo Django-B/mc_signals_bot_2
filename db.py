@@ -1,5 +1,6 @@
 import aiosqlite, asyncio
-from pprint import pprint
+import datetime
+
 
 from get_config import get_config
 from telethon_client import user_client
@@ -16,6 +17,7 @@ USERS_TABLE_NAME = 'bot_user'
 
 
 async def create_tables():
+    # with open(DB_NAME, 'w'): pass
     async with aiosqlite.connect(DB_NAME) as db:
         cursor = await db.cursor()
 
@@ -42,9 +44,7 @@ async def insert_message(game: Game):
                 GAME_TABLE_NAME,
                 ','.join(game._fields),
                 ','.join(['?' for _ in game._fields])
-            ), (
-                list(game)
-            )
+            ), list(game)
         )
 
         await db.commit()
@@ -122,8 +122,69 @@ async def init_db():
 
 
 async def main():
+    test_game = Game(
+        message_id=618, 
+        game_date=str(datetime.date(2020, 3, 13)), 
+        game_time=str(datetime.time(1, 25)), 
+        p1_name='КунгДжин', 
+        p2_name='Скорпион', 
+        p1_game_win_coef=None, 
+        p2_game_win_coef=None, 
+        p1_round_win_coef=1.78, 
+        p2_round_win_coef=2.135, 
+        f_coef=None, b_coef=None, 
+        r_coef=None, 
+        min_num_total=27.5, 
+        min_num_total_min_coef=3.7, 
+        min_num_total_max_coef=1.288, 
+        mid_num_total=33.5, 
+        mid_num_total_min_coef=2.025, 
+        mid_num_total_max_coef=1.88, 
+        max_num_total=39.5, 
+        max_num_total_min_coef=1.288, 
+        max_num_total_max_coef=3.7, 
+        fyes=None, fno=None, 
+        p1_wins=2, p2_wins=1, 
+        round1_winner='P1', 
+        round1_finish='R', 
+        round1_time=37, 
+        round1_total=None, 
+        round2_winner='P1', 
+        round2_finish='R', 
+        round2_time=32, 
+        round2_total=None, 
+        round3_winner='P2', 
+        round3_finish='F', 
+        round3_time=37, 
+        round3_total=None, 
+        round4_winner='P2', 
+        round4_finish='R', 
+        round4_time=21, 
+        round4_total=None, 
+        round5_winner='P2', 
+        round5_finish='R', 
+        round5_time=18, 
+        round5_total=None, 
+        round6_winner='P1', 
+        round6_finish='F', 
+        round6_time=43, 
+        round6_total=None, 
+        round7_winner='P1', 
+        round7_finish='F', 
+        round7_time=14, 
+        round7_total=None, 
+        round8_winner='P2', 
+        round8_finish='R', 
+        round8_time=24, 
+        round8_total=None, 
+        round9_winner='P2',
+        round9_finish='F', 
+        round9_time=15, 
+        round9_total=None
+    )
     await init_db()
-    pprint((await get_messages())[100][''])
+    await insert_message(test_game)
+
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

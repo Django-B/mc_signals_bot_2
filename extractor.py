@@ -84,7 +84,7 @@ async def extract_nums_totals(
     tuple[float, float, float],
     tuple[float, float, float],
     tuple[float, float, float]
-] | tuple[None, None, None]:
+] | tuple[tuple[None, None, None],tuple[None, None, None],tuple[None, None, None]]:
     '''
     Returns tuple: (
         (min_num_total, min_num_total_min_coef, min_num_total_max_coef),
@@ -94,8 +94,8 @@ async def extract_nums_totals(
     '''
     regex = r'(?P<total>[0-9]+(?:[.,][0-9]*)?).*\((?P<min_coef>[0-9]+(?:[,.]?[0-9]*)?)\D+(?P<max_coef>[0-9]+(?:[,.][0-9]*)?)\)'
     res = re.findall(regex, message_text)
-    if not res: return [None, None, None]
-    if len(res) != 3: return [None, None, None]
+    if not res: return [[None, None, None],[None, None, None],[None, None, None]]
+    if len(res) != 3: return [[None, None, None],[None, None, None],[None, None, None]]
     return tuple(map(lambda x: tuple([float(i) for i in x]), res))
 
 async def extract_f(message_text: str) -> tuple[float, float] | tuple[None, None]:
@@ -153,7 +153,6 @@ async def extract_game_data(message) -> Game | None: # type: ignore
         p1,
         p2,
         round1.values(),
-        min_num_totals, mid_num_totals, max_num_totals
     ]):
         return None
 

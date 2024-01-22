@@ -1,5 +1,6 @@
 import aiosqlite, asyncio
 import datetime
+import time
 
 
 from get_config import get_config
@@ -90,16 +91,17 @@ async def delete_last_messages(delete_messages_count=5) -> int:
     return last_message_id
 
 
-async def get_messages() -> list:
+async def get_messages() -> Game:
     async with aiosqlite.connect(DB_NAME) as db:
-        db.row_factory = aiosqlite.Row
+        # db.row_factory = aiosqlite.Row
         cursor = await db.cursor()
 
         # Получение всех сообщений из таблицы
         await cursor.execute(f'SELECT * FROM {GAME_TABLE_NAME}')
         messages = await cursor.fetchall()
 
-        return list(messages)
+        # return (messages)
+        return list(map(lambda x: Game(*x[1:]), messages))
 
 async def get_users() -> list:
     async with aiosqlite.connect(DB_NAME) as db:
@@ -183,13 +185,15 @@ async def main():
         round9_total=None
     )
     await init_db()
-    await insert_message(test_game)
+    # await insert_message(test_game)
+    start_time = time.time()
+    msgs = await get_messages()
+    end_time = time.time()
+    execute_time = start_time-end_time
+    print(msgs[0])
+    print(execute_time)
 
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
-
-
-
-

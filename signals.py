@@ -7,19 +7,28 @@ class Strategy:
     def __init__ (self, games):
         self.games = games
 
-    def round_total_max_streak(self, round_num: int):
+    def round_total_max_streak(self, total_name: str round_num: int):
         '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
-        pass
+        total_key_name = f'round{round_num}_total'
+        streak = 0
+        max_streak = 0
+        for game in games:
+            if game._asdict()[total_key_name] == total_name:
+                streak += 1
+                max_streak = max(max_streak, streak)
+            else:
+                streak = 0
+        return max_streak
 
     def round_total_last_streak(self, round_num: int) -> tuple[str, int]:
         '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
         games_reversed = self.games[::-1]  # игры от новых к старым 
-        total_key = f'round{round_num}_total'
+        total_key_name = f'round{round_num}_total'
         last_total = None
         streak = 0
         flag = False
         for game in games_reversed:
-            total = game._asdict()[total_key]
+            total = game._asdict()[total_key_name]
             if total and not flag:
                 last_total = total[0:2]
                 streak += 1

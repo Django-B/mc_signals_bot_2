@@ -114,7 +114,7 @@ async def extract_p_wins(message_text: str) -> tuple[int, int] | tuple[None, Non
 
 async def extract_round_data(message_text: str, round_num: int) -> dict:
     # regex = r'{}\. +(?P<winner>[A-z\d]+).+(?P<finish>[A-z]+).+(?P<time>[\d]+) +(?P<total>[A-z]+)'.format(round_num)
-    regex = r'{}[^A-z0-9\/]+(?P<winner>[A-z][12])[^A-z]+(?P<finish>[A-z])\D+(?P<time>[0-9]+)[^A-z]+(?P<total>[A-z]{2,})?'.format(round_num)
+    regex = str(round_num)+r'[^A-z0-9\/]+(?P<winner>[A-z][12])[^A-z]+(?P<finish>[A-z])\D+(?P<time>[0-9]+)[^A-z]+(?P<total>[A-z]{2,})?'
     res = re.search(regex, message_text)
     if not res:
         return {'winner':None, 'finish':None,'time':None, 'total':None}

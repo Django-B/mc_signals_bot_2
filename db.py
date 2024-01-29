@@ -82,7 +82,7 @@ async def delete_game_by_note_id(note_id: int):
 
 async def delete_last_messages(delete_messages_count=5) -> int:
     messages_history = await get_games()
-    last_message_id = messages_history[-1]['id']
+    last_message_id = messages_history[-1].game_id
     for _ in range(delete_messages_count):
         await delete_game_by_note_id(last_message_id)
         print(f'Удален пост:', last_message_id)
@@ -125,7 +125,7 @@ async def init_db():
 
 async def main():
     test_game = Game(
-        message_id=618, 
+        game_id=618, 
         game_date=str(datetime.date(2020, 3, 13)), 
         game_time=str(datetime.time(1, 25)), 
         p1_name='КунгДжин', 

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS game (
     id integer primary key autoincrement,
-    message_id integer unique,
+    game_id integer unique,
 
     game_date text,
     game_time text,

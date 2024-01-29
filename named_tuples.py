@@ -3,7 +3,7 @@ import datetime
 
 
 class Game(NamedTuple):
-    message_id: int
+    game_id: int
 
     game_date: datetime.date
     game_time: datetime.time

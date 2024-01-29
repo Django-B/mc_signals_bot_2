@@ -127,7 +127,7 @@ async def extract_round_data(message_text: str, round_num: int) -> dict:
     return data
 
 async def extract_game_data(message) -> Game | None: # type: ignore
-    message_id = message.id
+    game_id = message.id
     message_text = message.raw_text
     date, time = await extract_date_and_time(message_text)
     p1, p2 = await extract_p_names(message_text)
@@ -157,7 +157,7 @@ async def extract_game_data(message) -> Game | None: # type: ignore
         return None
 
     game = Game(
-        message_id=message_id,
+        game_id=game_id,
         game_date=date, # type: ignore
         game_time=time, # type: ignore
         p1_name=p1, # type: ignore

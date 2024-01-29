@@ -81,7 +81,7 @@ async def delete_game_by_note_id(note_id: int):
     return deleted_rows_count
 
 async def delete_last_messages(delete_messages_count=5) -> int:
-    messages_history = await get_messages()
+    messages_history = await get_games()
     last_message_id = messages_history[-1]['id']
     for _ in range(delete_messages_count):
         await delete_game_by_note_id(last_message_id)
@@ -91,7 +91,7 @@ async def delete_last_messages(delete_messages_count=5) -> int:
     return last_message_id
 
 
-async def get_messages() -> Game:
+async def get_games() -> Game:
     async with aiosqlite.connect(DB_NAME) as db:
         # db.row_factory = aiosqlite.Row
         cursor = await db.cursor()
@@ -187,7 +187,7 @@ async def main():
     await init_db()
     # await insert_message(test_game)
     start_time = time.time()
-    msgs = await get_messages()
+    msgs = await get_games()
     end_time = time.time()
     execute_time = start_time-end_time
     print(msgs[0])

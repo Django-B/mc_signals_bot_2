@@ -6,3 +6,4 @@ test.py
 *.sqlite
 *.db
 *.session
+*-journal

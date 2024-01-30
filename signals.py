@@ -10,15 +10,16 @@ class Strategy:
     def round_total_max_streak(self, total_name: str, round_num: int):
         '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
         total_key_name = f'round{round_num}_total'
-        streak = 0
+        cur_streak = 0
         max_streak = 0
-        for game in games:
+        
+        for game in self.games:
             if game._asdict()[total_key_name] == total_name:
-                streak += 1
-                max_streak = max(max_streak, streak)
+                cur_streak += 1
             else:
-                streak = 0
-        return max_streak
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
+        return total_name, max_streak
 
     def round_total_last_streak(self, round_num: int) -> tuple[str, int]:
         '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
@@ -45,9 +46,15 @@ class Strategy:
 def main():
     loop = asyncio.get_event_loop()
     games = loop.run_until_complete(db.get_games())
-    strategy = Strategy(games)
-    res = strategy.round_total_last_streak(1)
-    print(res)
+    for game in games: 
+        if game.round1_total and game.round1_total[0:2] not in ('TB', 'TM'):
+            print(game.game_id, game.round1_total)
+    # strategy = Strategy(games)
+    # res = strategy.round_total_last_streak(1)
+    # res = strategy.round_total_max_streak('TB', 1)
+    # print(res)
+    # res = strategy.round_total_max_streak('TM', 1)
+    # print(res)
 
 if __name__=='__main__':
     main()

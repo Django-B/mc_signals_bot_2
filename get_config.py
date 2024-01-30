@@ -14,7 +14,6 @@ def get_config():
     else:
         config = config['main']
 
-    print('Подключен config:', config.name)
     return config
 
 if __name__=='__main__':

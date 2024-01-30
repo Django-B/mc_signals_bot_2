@@ -14,7 +14,7 @@ class Strategy:
         max_streak = 0
         
         for game in self.games:
-            if game._asdict()[total_key_name] == total_name:
+            if game._asdict()[total_key_name] and game._asdict()[total_key_name].startswith(total_name):
                 cur_streak += 1
             else:
                 max_streak = max(max_streak, cur_streak)
@@ -46,15 +46,12 @@ class Strategy:
 def main():
     loop = asyncio.get_event_loop()
     games = loop.run_until_complete(db.get_games())
-    for game in games: 
-        if game.round1_total and game.round1_total[0:2] not in ('TB', 'TM'):
-            print(game.game_id, game.round1_total)
-    # strategy = Strategy(games)
-    # res = strategy.round_total_last_streak(1)
-    # res = strategy.round_total_max_streak('TB', 1)
-    # print(res)
-    # res = strategy.round_total_max_streak('TM', 1)
-    # print(res)
+    strategy = Strategy(games)
+    res = strategy.round_total_last_streak(1)
+    res = strategy.round_total_max_streak('TB', 1)
+    print(res)
+    res = strategy.round_total_max_streak('TM', 1)
+    print(res)
 
 if __name__=='__main__':
     main()

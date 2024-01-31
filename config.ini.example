@@ -14,5 +14,5 @@ bot_token =
 target_channel_url = https://t.me/your_test_channel
 bot_owners = django_999
 db_name = test_db.sqlite3
-check_interval = 5
+check_interval = 5 ;В МИНУТАХ
 

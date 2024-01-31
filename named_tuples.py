@@ -5,7 +5,7 @@ import datetime
 
 class Games(UserList):
 
-    def round_total_max_streak(self, total_name: str, round_num: int):
+    async def round_total_max_streak(self, total_name: str, round_num: int):
         '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
         total_key_name = f'round{round_num}_total'
         cur_streak = 0
@@ -19,7 +19,7 @@ class Games(UserList):
                 cur_streak = 0
         return total_name, max_streak
 
-    def round_total_last_streak(self, round_num: int) -> tuple[str, int]:
+    async def round_total_last_streak(self, round_num: int) -> tuple[str, int]:
         '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
         games_reversed = self.data[::-1]  # игры от новых к старым 
         total_key_name = f'round{round_num}_total'
@@ -121,3 +121,5 @@ class Game(NamedTuple):
     round9_finish: str | None
     round9_time: str | None
     round9_total: str | None
+
+

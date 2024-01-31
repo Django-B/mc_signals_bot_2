@@ -4,14 +4,12 @@ import time
 
 
 from get_config import get_config
-from telethon_client import user_client
 
 from named_tuples import Game, Games
 
 config = get_config()
 
 DB_NAME = config['db_name']
-BOT_OWNERS = config['bot_owners'].split()
 # CHANNEL_NAME = config['target_channel_url'].split('/')[-1]
 GAME_TABLE_NAME = 'game'
 USERS_TABLE_NAME = 'bot_user'
@@ -19,7 +17,7 @@ USERS_TABLE_NAME = 'bot_user'
 
 async def create_tables():
     # with open(DB_NAME, 'w'): pass
-    async with aiosqlite.connect(DB_NAME) as db:
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
         cursor = await db.cursor()
 
         with open('game.sql') as f:
@@ -34,7 +32,7 @@ async def create_tables():
 
 async def insert_message(game: Game):
     '''Cоздает запись результата игры в БД'''
-    async with aiosqlite.connect(DB_NAME) as db:
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
         cursor = await db.cursor()
 
         # Вставка данных сообщения в таблицу
@@ -52,7 +50,7 @@ async def insert_message(game: Game):
 
 async def insert_user(user_id, username):
     '''Создание записи пользователя в БД'''
-    async with aiosqlite.connect(DB_NAME) as db:
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
         cursor = await db.cursor()
 
         # Вставка данных сообщения в таблицу
@@ -63,15 +61,11 @@ async def insert_user(user_id, username):
 
         await db.commit()
 
-async def insert_users_from_config():
-    '''Добавление всех пользователей перечисленных в config.ini->BOT_OWNERS в БД'''
-    for username in BOT_OWNERS:
-        user_id = (await user_client.get_entity(username)).id
-        await insert_user(user_id, username)
+
 
 async def delete_game_by_note_id(note_id: int):
     '''Удаляет сообщение по id записи'''
-    async with aiosqlite.connect(DB_NAME) as db:
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
         cursor = await db.cursor()
         
         await cursor.execute(f"DELETE FROM {GAME_TABLE_NAME} WHERE id = ?", (note_id,))
@@ -92,7 +86,7 @@ async def delete_last_messages(delete_messages_count=5) -> int:
 
 
 async def get_games() -> Games:
-    async with aiosqlite.connect(DB_NAME) as db:
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
         # db.row_factory = aiosqlite.Row
         cursor = await db.cursor()
 
@@ -104,22 +98,20 @@ async def get_games() -> Games:
         return Games(list(map(lambda x: Game(*x[1:]), messages)))
 
 async def get_users() -> list:
-    async with aiosqlite.connect(DB_NAME) as db:
-        db.row_factory = aiosqlite.Row
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
+        # db.row_factory = aiosqlite.Row
         cursor = await db.cursor()
 
         # Получение всех сообщений из таблицы
         await cursor.execute('SELECT * FROM {}'.format(USERS_TABLE_NAME))
         users = await cursor.fetchall()
 
-        return list(users)
+        return users
 
 async def init_db():
     print('START DATABASE INIT')
     print('CREATE TABLES')
     await create_tables()
-    print('INSERT USERS FROM CONFIG')
-    await insert_users_from_config()
     print('DATABASE INIT SUCCESSFUL')
 
 
@@ -184,14 +176,10 @@ async def main():
         round9_time=15, 
         round9_total=None
     )
-    await init_db()
-    # await insert_message(test_game)
-    start_time = time.time()
-    msgs = await get_games()
-    end_time = time.time()
-    execute_time = start_time-end_time
-    print(msgs[0])
-    print(execute_time)
+    users = await get_users()
+    print(users)
+    print(type(users))
+    
 
 
 if __name__ == '__main__':

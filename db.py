@@ -6,7 +6,7 @@ import time
 from get_config import get_config
 from telethon_client import user_client
 
-from named_tuples import Game
+from named_tuples import Game, Games
 
 config = get_config()
 
@@ -91,7 +91,7 @@ async def delete_last_messages(delete_messages_count=5) -> int:
     return last_message_id
 
 
-async def get_games() -> Game:
+async def get_games() -> Games:
     async with aiosqlite.connect(DB_NAME) as db:
         # db.row_factory = aiosqlite.Row
         cursor = await db.cursor()
@@ -101,7 +101,7 @@ async def get_games() -> Game:
         messages = await cursor.fetchall()
 
         # return (messages)
-        return list(map(lambda x: Game(*x[1:]), messages))
+        return Games(list(map(lambda x: Game(*x[1:]), messages)))
 
 async def get_users() -> list:
     async with aiosqlite.connect(DB_NAME) as db:

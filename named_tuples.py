@@ -3,9 +3,26 @@ from collections import UserList
 import datetime
 
 
-class Games(UserList):
+class DotDict(dict):
+    """Класс, представляющий собой словарь, к элементам которого можно обращаться через точку."""
+    def __init__(self, d: dict):
+        self.d = d
 
-    async def round_total_max_streak(self, total_name: str, round_num: int):
+    def get_value(self):
+        return self.d
+
+    def __getattr__(self, item: str) -> 'WrapperMap':
+        return self.d.get(item)
+
+    def __repr__(self):
+        return repr(self.d)
+
+class Strategies(UserList):
+    async def get_signals(self, games):
+        pass
+
+class Games(UserList):
+    async def max_round_total_streak(self, total_name: str, round_num: int = 1):
         '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
         total_key_name = f'round{round_num}_total'
         cur_streak = 0
@@ -17,9 +34,9 @@ class Games(UserList):
             else:
                 max_streak = max(max_streak, cur_streak)
                 cur_streak = 0
-        return total_name, max_streak
+        return DotDict({'total': total_name, 'streak': max_streak})
 
-    async def round_total_last_streak(self, round_num: int) -> tuple[str, int]:
+    async def cur_round_total_streak(self, round_num: int = 1) -> tuple[str, int]:
         '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
         games_reversed = self.data[::-1]  # игры от новых к старым 
         total_key_name = f'round{round_num}_total'
@@ -38,7 +55,7 @@ class Games(UserList):
                         streak += 1
                     else: 
                         break
-        return cur_total, streak
+        return DotDict({'total': cur_total, 'streak': streak})
 
 class Game(NamedTuple):
     game_id: int
@@ -121,5 +138,4 @@ class Game(NamedTuple):
     round9_finish: str | None
     round9_time: str | None
     round9_total: str | None
-
 

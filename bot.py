@@ -54,6 +54,10 @@ async def insert_users_from_config():
     return user_ids
 
 async def on_startup(_):
+    print('Инициализация базы данных'.center(100, '-'))
+    await init_db()
+    print('База данных успешно инициализирована'.center(100, '-'))
+
     print('Проверка списка пользователей бота'.center(100, '-'))
     user_ids = await insert_users_from_config()
     for user_id in user_ids:
@@ -64,9 +68,4 @@ async def on_startup(_):
     loop.create_task(schedule_check_strategies())
 
 if __name__ == '__main__':
-    print('Инициализация базы данных'.center(100, '-'))
-    await init_db()
-    print('База данных успешно инициализирована'.center(100, '-'))
-
-
     executor.start_polling(dp, skip_updates=False, on_startup=on_startup)

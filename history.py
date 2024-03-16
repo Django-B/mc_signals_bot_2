@@ -29,15 +29,13 @@ async def get_round_res(message_text: str, round_num: int) -> str|None:
 
 async def dump_channel_history(channel_url=TARGET_CHANNEL_URL):
     '''Собирает данные по всем играм с телеграм канала'''
-    await init_db()
-
     channel_entity = await user_client.get_entity(channel_url) 
 
     offset_id = 0
     messages_history = list(await get_games())
 
     if messages_history:
-        offset_id = await delete_last_messages(5)
+        offset_id = await delete_last_messages(10)
 
     # перебор последних сообщений канала
     async for message in user_client.iter_messages(

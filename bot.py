@@ -46,17 +46,27 @@ async def schedule_check_strategies():
 
 async def insert_users_from_config():
     '''Добавление всех пользователей перечисленных в config.ini->BOT_OWNERS в БД'''
+    user_ids = []
     for username in BOT_OWNERS:
         user_id = (await user_client.get_entity(username)).id
         await insert_user(user_id, username)
+        user_ids.append(user_id)
+    return user_ids
 
 async def on_startup(_):
     print('Проверка списка пользователей бота'.center(100, '-'))
-    await insert_users_from_config()
+    user_ids = await insert_users_from_config()
+    for user_id in user_ids:
+        await bot.send_message(user_id, 'Бот запущен!')
     print('Бот успешно запущен'.center(100, '-'))
 
-if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_check_strategies())
+
+if __name__ == '__main__':
+    print('Инициализация базы данных'.center(100, '-'))
+    await init_db()
+    print('База данных успешно инициализирована'.center(100, '-'))
+
 
     executor.start_polling(dp, skip_updates=False, on_startup=on_startup)

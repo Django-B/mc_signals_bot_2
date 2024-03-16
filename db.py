@@ -46,6 +46,9 @@ async def insert_message(game: Game):
             ), list(game)
         )
 
+        if game.p1_name == 'Чужой' and game.p2_name == 'Эрмак':
+            print(game)
+
         await db.commit()
 
 async def insert_user(user_id, username):
@@ -77,10 +80,11 @@ async def delete_game_by_note_id(note_id: int):
 async def delete_last_messages(delete_messages_count=5) -> int:
     messages_history = await get_games()
     last_message_id = messages_history[-1].game_id
-    for _ in range(delete_messages_count):
-        await delete_game_by_note_id(last_message_id)
-        print(f'Удален пост:', last_message_id)
-        last_message_id -= 1
+    if delete_messages_count != 0:
+        for _ in range(delete_messages_count):
+            await delete_game_by_note_id(last_message_id)
+            print(f'Удален пост:', last_message_id)
+            last_message_id -= 1
 
     return last_message_id
 

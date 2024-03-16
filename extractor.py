@@ -6,25 +6,28 @@ from named_tuples import Game
 from pprint import pprint
 
 
-test_message_text = '''Mortal Kombat X
-04:10 2020-03-12
-#Хищник - #СоняБлейд - 1014
-P1/P2 - 2.096/1.825
-FBR
-3.37 | 4.44 | 1.865
-TIME(M-B)
-27.5 (4.44 - 1.2)
-36.5 (1.995 - 1.904)
-44.5 (1.24 - 4)
+test_message_text = '''
+19:25 16-03-2024 #N1195 #L2
+#ЧужойЭрмак
+#Чужой #Эрмак
+   P1m|P2m - 1.184|4.77
+P1/P2 - 1.512/2.625
+FBR - 4.54 | 4.82 | 1.5
+#FW - 75
+#t8v7     atv : 39.17
+TimeStat(Больше-Меньше:O-U)
+31.5 (1.23 - 4.09)   #m31
+39.5 (1.965 - 1.936)   #s39
+46.5 (4.49 - 1.2)   #b46
+FYes -4.54    FNo -1.2
 
-2:5
-1. P2-R-46
-2. P2-R-21
-3. P2-R-40
-4. P1-R-36
-5. P1-F-40
-6. P2-R-36
-7. P2-R-37'''
+5:0
+1. P1--F--32  TM
+2. P1--B--46  TB
+3. P1--R--43  TB
+4. P1--R--57  TBB
+5. P1--R--41  TB 
+   #T5'''
 
 async def extract_date_and_time(
     message_text: str
@@ -229,8 +232,8 @@ async def main():
         id: int
         raw_text: str
     test_message = message(id=1, raw_text=test_message_text)
-    a = await extract_nums_totals(test_message_text)
-    # print(a)
+    data = await extract_game_data(test_message)
+    print(data)
     
 
 if __name__=='__main__':

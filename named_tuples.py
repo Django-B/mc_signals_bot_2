@@ -28,7 +28,7 @@ class Games(UserList):
         total_key_name = f'round{round_num}_total'
         cur_streak = 0
         max_streak = 0
-        
+
         for game in self.data:
             if game._asdict()[total_key_name] and game._asdict()[total_key_name].startswith(total_name):
                 cur_streak += 1
@@ -73,7 +73,7 @@ class Games(UserList):
 
     async def get_cur_streak(self, field_name: str):
         '''Возвращает длину последней серии field_name(нужного исхода)'''
-        games_reversed = self.data[::-1]  # игры от новых к старым 
+        games_reversed = self.data[::-1] # игры от новых к старым
         cur_total = None
         streak = 0
         flag = False

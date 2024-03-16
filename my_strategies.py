@@ -254,7 +254,7 @@ async def strategy10(games: Games):
             total1 = game._asdict()[total1_key_name]
             total2 = game._asdict()[total2_key_name]
             if total1 and total2:
-                if total1.startswith(val) and total2.startswith(val2):
+                if total1.startswith(val1) and total2.startswith(val2):
                     streak += 1
                 else: 
                     break
@@ -418,11 +418,15 @@ async def strategy13(games: Games):
         return f'Текущая серия игр {val1} и {val2} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}'
 
 
+async def test_strategy(games: Games):
+    res = await games.cur_round_total_streak(4)
+    print(res)
+
 
 async def test():
-    await dump_channel_history()
+    #await dump_channel_history()
     games = await db.get_games()
-    res = await strategy1(games)
+    res = await test_strategy(games)
     print(res)
 
 if __name__=='__main__':

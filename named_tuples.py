@@ -21,75 +21,76 @@ class Strategies(UserList):
     async def get_signals(self, games):
         pass
 
+async def max_round_total_streak(games, total_name: str, round_num: int = 1):
+    '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
+    total_name = total_name[0:2]
+    total_key_name = f'round{round_num}_total'
+    cur_streak = 0
+    max_streak = 0
+
+    for game in games:
+        if game[total_key_name] and game[total_key_name].startswith(total_name):
+            cur_streak += 1
+        else:
+            max_streak = max(max_streak, cur_streak)
+            cur_streak = 0
+    return DotDict({'total': total_name, 'streak': max_streak})
+
+async def cur_round_total_streak(games_reversed, round_num: int = 1) -> tuple[str, int]:
+    '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
+    total_key_name = f'round{round_num}_total'
+    cur_total = None
+    streak = 0
+    flag = False
+    for game in games_reversed:
+        total = game[total_key_name]
+        if total:
+            if not flag:
+                cur_total = total[0:2]
+                streak += 1
+                flag = True
+            elif flag:
+                if total[0:2]==cur_total:
+                    streak += 1
+                else: 
+                    break
+    return DotDict({'total': cur_total, 'streak': streak})
+
+async def get_max_streak(games, field_name: str, right_value):
+    '''Возвращает максимальную длину серии field_name(нужного исхода) cо значением right_value'''
+    cur_streak = 0
+    max_streak = 0
+    
+    for game in games():
+        if game[field_name] and str(game[field_name]) == str(right_value):
+            cur_streak += 1
+        else:
+            max_streak = max(max_streak, cur_streak)
+            cur_streak = 0
+    return max_streak
+
+async def get_cur_streak(games_reversed, field_name: str):
+    '''Возвращает длину последней серии field_name(нужного исхода)'''
+    cur_total = None
+    streak = 0
+    flag = False
+    for game in games_reversed:
+        total = game[field_name]
+        if total:
+            if not flag:
+                cur_total = total
+                streak += 1
+                flag = True
+            elif flag:
+                if total==cur_total:
+                    streak += 1
+                else: 
+                    break
+    return DotDict({'total': cur_total, 'streak': streak})
+
+
 class Games(UserList):
-    async def max_round_total_streak(self, total_name: str, round_num: int = 1):
-        '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
-        total_name = total_name[0:2]
-        total_key_name = f'round{round_num}_total'
-        cur_streak = 0
-        max_streak = 0
-
-        for game in self.data:
-            if game._asdict()[total_key_name] and game._asdict()[total_key_name].startswith(total_name):
-                cur_streak += 1
-            else:
-                max_streak = max(max_streak, cur_streak)
-                cur_streak = 0
-        return DotDict({'total': total_name, 'streak': max_streak})
-
-    async def cur_round_total_streak(self, round_num: int = 1) -> tuple[str, int]:
-        '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
-        games_reversed = self.data[::-1]  # игры от новых к старым 
-        total_key_name = f'round{round_num}_total'
-        cur_total = None
-        streak = 0
-        flag = False
-        for game in games_reversed:
-            total = game._asdict()[total_key_name]
-            if total:
-                if not flag:
-                    cur_total = total[0:2]
-                    streak += 1
-                    flag = True
-                elif flag:
-                    if total[0:2]==cur_total:
-                        streak += 1
-                    else: 
-                        break
-        return DotDict({'total': cur_total, 'streak': streak})
-
-    async def get_max_streak(self, field_name: str, right_value):
-        '''Возвращает максимальную длину серии field_name(нужного исхода) cо значением right_value'''
-        cur_streak = 0
-        max_streak = 0
-        
-        for game in self.data:
-            if game._asdict()[field_name] and str(game._asdict()[field_name]) == str(right_value):
-                cur_streak += 1
-            else:
-                max_streak = max(max_streak, cur_streak)
-                cur_streak = 0
-        return max_streak
-
-    async def get_cur_streak(self, field_name: str):
-        '''Возвращает длину последней серии field_name(нужного исхода)'''
-        games_reversed = self.data[::-1] # игры от новых к старым
-        cur_total = None
-        streak = 0
-        flag = False
-        for game in games_reversed:
-            total = game._asdict()[field_name]
-            if total:
-                if not flag:
-                    cur_total = total
-                    streak += 1
-                    flag = True
-                elif flag:
-                    if total==cur_total:
-                        streak += 1
-                    else: 
-                        break
-        return DotDict({'total': cur_total, 'streak': streak})
+    pass
 
 class Game(NamedTuple):
     game_id: int

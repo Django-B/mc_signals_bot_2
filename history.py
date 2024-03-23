@@ -2,7 +2,7 @@ from telethon.tl.types import InputPeerChannel
 import asyncio 
 import re
 
-from db import get_games, delete_last_messages, insert_message, init_db
+from db import get_some_games, delete_last_messages, insert_message, init_db
 from get_config import get_config
 from telethon_client import user_client
 
@@ -32,10 +32,12 @@ async def dump_channel_history(channel_url=TARGET_CHANNEL_URL):
     channel_entity = await user_client.get_entity(channel_url) 
 
     offset_id = 0
-    messages_history = list(await get_games())
+    delete_count = 10
+    games = list(await get_some_games(delete_count+5)) # берем с запасом на всякий случай
 
-    if messages_history:
-        offset_id = await delete_last_messages(10)
+    if games:
+        offset_id = await delete_last_messages(delete_count)
+        print(f'Удалены последние {delete_count} сообщений')
 
     # перебор последних сообщений канала
     async for message in user_client.iter_messages(

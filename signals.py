@@ -2,15 +2,17 @@ import db
 import asyncio
 from my_strategies import strategies
 
+
 async def check_all_signals():
     '''Проверяет есть ли совпадения по стратегиям и возвращает их ответы'''
-    games = await db.get_games()
     signals = []
     for signal in strategies:
-        res = await signal(games)
+        res = await signal()
         if res:
             signals.append(res)
     return signals
+
+
 
 async def main():
     print(strategies)

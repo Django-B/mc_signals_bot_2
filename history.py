@@ -6,6 +6,7 @@ from db import get_some_games, delete_last_messages, insert_message, init_db
 from get_config import get_config
 from telethon_client import user_client
 
+from logger import logger
 from named_tuples import Game
 import extractor as ext
 

@@ -1,8 +1,7 @@
 import aiosqlite, asyncio
 import datetime
 import time
-
-
+from logger import logger
 from get_config import get_config
 
 from named_tuples import Game, Games

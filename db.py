@@ -82,7 +82,8 @@ async def delete_last_messages(delete_games_count=5) -> int:
         last_games = await get_some_games(-delete_games_count)
         for game in last_games:
             await delete_game_by_game_id(game['game_id'])
-            logger.info(f'Удален пост: {game['game_id']}')
+            game_id = game['game_id']
+            logger.info(f'Удален пост: {game_id}')
     last_game = await get_some_games(-1)
     return last_game[0]['game_id']
 

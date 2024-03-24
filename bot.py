@@ -1,11 +1,10 @@
 from aiogram import Bot, Dispatcher, types, executor
 from aiogram.types import ParseMode
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-
 import asyncio
+from logger import logger
 
 import signals
-
 from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user
@@ -31,17 +30,17 @@ async def send_signal():
 async def schedule_check_strategies():
     users = await get_users()
     while True:
-        print('Загрузка новых сообщений'.center(100, '-'))
+        logger.info('Загрузка новых сообщений')
         await dump_channel_history()
-        print('Проверка сигналов'.center(100, '-'))
+        logger.info('Проверка сигналов')
         all_signals = await signals.check_all_signals()
         if all_signals:
-            print('Есть сигнал'.center(100, '-'))
+            logger.info('Есть сигнал')
             for signal in all_signals:
                 for user_id, username in users:
-                    print(f'Отправка сигнала пользователю {username}'.center(100, '-'))
+                    logger.info(f'Отправка сигнала пользователю {username}')
                     await bot.send_message(chat_id=user_id, text=signal, parse_mode=ParseMode.MARKDOWN)
-        print('Конец проверки сигналов'.center(100, '-'))
+        logger.info('Конец проверки сигналов'.center)
         await asyncio.sleep(CHECK_INTERVAL)
 
 async def insert_users_from_config():
@@ -54,15 +53,15 @@ async def insert_users_from_config():
     return user_ids
 
 async def on_startup(_):
-    print('Инициализация базы данных'.center(100, '-'))
+    logger.info('Инициализация базы данных')
     await init_db()
-    print('База данных успешно инициализирована'.center(100, '-'))
+    logger.info('База данных успешно инициализирована')
 
-    print('Проверка списка пользователей бота'.center(100, '-'))
+    logger.info('Проверка списка пользователей бота')
     user_ids = await insert_users_from_config()
     for user_id in user_ids:
         await bot.send_message(user_id, 'Бот запущен!')
-    print('Бот успешно запущен'.center(100, '-'))
+    logger.info('Бот успешно запущен'.center(100, '-'))
 
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_check_strategies())

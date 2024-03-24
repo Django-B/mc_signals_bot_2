@@ -22,7 +22,7 @@ async def get_round_res(message_text: str, round_num: int) -> str|None:
     regex = r"{}. +[A-Z][0-9].+[A-Z].+\d\s+(?P<res>[A-Z]+)".format(str(round_num))
     res = re.search(regex, message_text)
     if res:
-        print(res)
+        logger.info(res)
         return res.group('res')
     return None
 
@@ -37,7 +37,7 @@ async def dump_channel_history(channel_url=TARGET_CHANNEL_URL):
 
     if games:
         offset_id = await delete_last_messages(delete_count)
-        print(f'Удалены последние {delete_count} сообщений')
+        logger.info(f'Удалены последние {delete_count} сообщений')
 
     # перебор последних сообщений канала
     async for message in user_client.iter_messages(
@@ -55,7 +55,7 @@ async def dump_channel_history(channel_url=TARGET_CHANNEL_URL):
 
         await insert_message(game=game)
         message_preview = message.text[:message.text.find('\n')]+'...' if message.text else '[Текст отсутствует]'
-        print('Сохранение поста с ID {} | {} '.format(message.id, message_preview))
+        logger.info('Сохранение поста с ID {} | {} '.format(message.id, message_preview))
 
 async def main():
     await dump_channel_history()

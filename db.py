@@ -47,7 +47,7 @@ async def insert_message(game: Game):
         )
 
         if game.p1_name == 'Чужой' and game.p2_name == 'Эрмак':
-            print(game)
+            logger.info(game)
 
         await db.commit()
 
@@ -82,7 +82,7 @@ async def delete_last_messages(delete_games_count=5) -> int:
         last_games = await get_some_games(-delete_games_count)
         for game in last_games:
             await delete_game_by_game_id(game['game_id'])
-            print(f'Удален пост:', game['game_id'])
+            logger.info(f'Удален пост: {game['game_id']}')
     last_game = await get_some_games(-1)
     return last_game[0]['game_id']
 
@@ -148,10 +148,10 @@ async def get_users() -> list:
         return users
 
 async def init_db():
-    print('START DATABASE INIT')
-    print('CREATE TABLES')
+    logger.info('START DATABASE INIT')
+    logger.info('CREATE TABLES')
     await create_tables()
-    print('DATABASE INIT SUCCESSFUL')
+    logger.info('DATABASE INIT SUCCESSFUL')
 
 async def test():
     games = get_many_games()

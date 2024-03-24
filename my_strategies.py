@@ -1,5 +1,7 @@
-from named_tuples import Games
 import asyncio
+
+from logger import logger
+from named_tuples import Games
 from named_tuples import cur_round_total_streak, max_round_total_streak, get_max_streak, get_cur_streak
 from db import  get_some_games, get_many_games
 

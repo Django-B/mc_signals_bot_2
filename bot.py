@@ -40,7 +40,7 @@ async def schedule_check_strategies():
                 for user_id, username in users:
                     logger.info(f'Отправка сигнала пользователю {username}')
                     await bot.send_message(chat_id=user_id, text=signal, parse_mode=ParseMode.MARKDOWN)
-        logger.info('Конец проверки сигналов'.center)
+        logger.info('Конец проверки сигналов')
         await asyncio.sleep(CHECK_INTERVAL)
 
 async def insert_users_from_config():

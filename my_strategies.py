@@ -3,7 +3,6 @@ import asyncio
 from logger import logger
 from named_tuples import Games
 from named_tuples import cur_round_total_streak, max_round_total_streak, get_max_streak, get_cur_streak
-from db import  get_some_games, get_many_games
 
 
 strategies = []
@@ -16,11 +15,11 @@ def strategy(func):
 
 
 @strategy
-async def strategy1():
+async def strategy1(last_games, all_games, all_games_rev):
     '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     round_num = 1
-    games = await get_some_games(-100)
-    last_game = games[0]
+    games = last_games
+    last_game = games[0]['game_id']
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
@@ -28,11 +27,11 @@ async def strategy1():
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy2():
+async def strategy2(last_games, all_games, all_games_rev):
     '''Текущая серия ТБ и ТМ 2-го раунда = 10'''
     round_num = 2
-    games = await get_some_games(-100)
-    last_game = games[0]
+    games = last_games
+    last_game = games[0]['game_id']
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
@@ -40,12 +39,11 @@ async def strategy2():
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy3():
+async def strategy3(last_games, all_games, all_games_rev):
     '''Текущая серия ТБ и ТМ 3-го раунда = 10'''
     round_num = 3
-    games = await get_some_games(-100)
-    last_game = games[0]
-    last_game = games[0]
+    games = last_games
+    last_game = games[0]['game_id']
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
@@ -53,11 +51,11 @@ async def strategy3():
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy4():
+async def strategy4(last_games, all_games, all_games_rev):
     '''Текущая серия ТБ и ТМ 4-го раунда = 10'''
     round_num = 4
-    games = await get_some_games(-100)
-    last_game = games[0]
+    games = last_games
+    last_game = games[0]['game_id']
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
@@ -65,11 +63,11 @@ async def strategy4():
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy5():
+async def strategy5(last_games, all_games, all_games_rev):
     '''Текущая серия ТБ и ТМ 5-го раунда = 10'''
     round_num = 5
-    games = await get_some_games(-100)
-    last_game = games[0]
+    games = last_games
+    last_game = games[0]['game_id']
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
@@ -77,12 +75,12 @@ async def strategy5():
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy6():
+async def strategy6(last_games, all_games, all_games_rev):
     '''Текущая серия игр ТБ в 1-м и 2-м раундах >= 10'''
     val = 'TB'
     round1_num, round2_num = 1, 2
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val: str = val, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -106,15 +104,14 @@ async def strategy6():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val) and \
-                    game[total2_key_name].startswith(val):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val) and \
+                game[total2_key_name].startswith(val):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -123,12 +120,12 @@ async def strategy6():
         return f'Текущая серия игр {val} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy7():
+async def strategy7(last_games, all_games, all_games_rev):
     '''Текущая серия игр ТБ в 2-м и 3-м раундах >= 10'''
     val = 'TB'
     round1_num, round2_num = 2, 3
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val: str = val, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -152,15 +149,14 @@ async def strategy7():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val) and \
-                    game[total2_key_name].startswith(val):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val) and \
+                game[total2_key_name].startswith(val):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -169,12 +165,12 @@ async def strategy7():
         return f'Текущая серия игр {val} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy8():
+async def strategy8(last_games, all_games, all_games_rev):
     '''Текущая серия игр ТM в 1-м и 2-м раундах >= 10'''
     val = 'TM'
     round1_num, round2_num = 1, 2
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val: str = val, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -198,15 +194,14 @@ async def strategy8():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val) and \
-                    game[total2_key_name].startswith(val):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val) and \
+                game[total2_key_name].startswith(val):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -215,12 +210,12 @@ async def strategy8():
         return f'Текущая серия игр {val} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy9():
+async def strategy9(last_games, all_games, all_games_rev):
     '''Текущая серия игр ТM в 2-м и 3-м раундах >= 10'''
     val = 'TM'
     round1_num, round2_num = 2, 3
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val: str = val, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -244,15 +239,14 @@ async def strategy9():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val) and \
-                    game[total2_key_name].startswith(val):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val) and \
+                game[total2_key_name].startswith(val):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -261,13 +255,13 @@ async def strategy9():
         return f'Текущая серия игр {val} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy10():
+async def strategy10(last_games, all_games, all_games_rev):
     '''Текущая серия игр TB+ТM в 1-м и 2-м раундах >= 10'''
     val1 = 'TB'
     val2 = 'TM'
     round1_num, round2_num = 1, 2
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val1: str = val1, val2: str = val2, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -291,15 +285,14 @@ async def strategy10():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val1) and \
-                    game[total2_key_name].startswith(val2):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val1) and \
+                game[total2_key_name].startswith(val2):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -308,13 +301,13 @@ async def strategy10():
         return f'Текущая серия игр {val1} и {val2} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy11():
+async def strategy11(last_games, all_games, all_games_rev):
     '''Текущая серия игр TB+ТM в 2-м и 3-м раундах >= 10'''
     val1 = 'TB'
     val2 = 'TM'
     round1_num, round2_num = 2, 3
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val1: str = val1, val2: str = val2, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -338,15 +331,14 @@ async def strategy11():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val1) and \
-                    game[total2_key_name].startswith(val2):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val1) and \
+                game[total2_key_name].startswith(val2):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -355,13 +347,13 @@ async def strategy11():
         return f'Текущая серия игр {val1} и {val2} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy12():
+async def strategy12(last_games, all_games, all_games_rev):
     '''Текущая серия игр ТM+TB в 1-м и 2-м раундах >= 10'''
     val1 = 'TM'
     val2 = 'TB'
     round1_num, round2_num = 1, 2
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val1: str = val1, val2: str = val2, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -385,15 +377,14 @@ async def strategy12():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val1) and \
-                    game[total2_key_name].startswith(val2):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val1) and \
+                game[total2_key_name].startswith(val2):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()
@@ -402,13 +393,13 @@ async def strategy12():
         return f'Текущая серия игр {val1} и {val2} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
-async def strategy13():
+async def strategy13(last_games, all_games, all_games_rev):
     '''Текущая серия игр ТM+TB в 2-м и 3-м раундах >= 10'''
     val1 = 'TM'
     val2 = 'TB'
     round1_num, round2_num = 2, 3
-    games_reversed = await get_some_games(-100)
-    last_game = games_reversed[0]
+    games_reversed = last_games
+    last_game = games_reversed[0]['game_id']
     async def cur_streak(val1: str = val1, val2: str = val2, round1_num: int = round1_num, round2_num: int = round2_num):
         total1_key_name = f'round{round1_num}_total'
         total2_key_name = f'round{round2_num}_total'
@@ -432,15 +423,14 @@ async def strategy13():
         cur_streak = 0
         max_streak = 0
 
-        async for games in get_many_games():
-            for game in games:
-                if game[total1_key_name] and game[total2_key_name] and \
-                    game[total1_key_name].startswith(val1) and \
-                    game[total2_key_name].startswith(val2):
-                    cur_streak += 1
-                else:
-                    max_streak = max(max_streak, cur_streak)
-                    cur_streak = 0
+        async for game in all_games:
+            if game[total1_key_name] and game[total2_key_name] and \
+                game[total1_key_name].startswith(val1) and \
+                game[total2_key_name].startswith(val2):
+                cur_streak += 1
+            else:
+                max_streak = max(max_streak, cur_streak)
+                cur_streak = 0
         return max_streak
 
     cur_streak = await cur_streak()

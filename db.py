@@ -133,7 +133,8 @@ async def get_many_games(count: int|str='all',batch_size: int=50):
             rows = await cursor.fetchmany(batch_size)
             if not rows:
                 break
-            yield rows
+            for row in rows:
+                yield row
 
 
 async def get_users() -> list:
@@ -227,8 +228,8 @@ async def main():
     # print(type(users))
 
     # games = await get_all_games()
-    await test()
-
+    async for game in get_many_games():
+        print(game)
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())

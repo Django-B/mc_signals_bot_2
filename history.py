@@ -28,12 +28,11 @@ async def get_round_res(message_text: str, round_num: int) -> str|None:
     return None
 
 
-async def dump_channel_history(channel_url=TARGET_CHANNEL_URL):
+async def dump_channel_history(channel_url=TARGET_CHANNEL_URL, delete_count=10):
     '''Собирает данные по всем играм с телеграм канала'''
     channel_entity = await user_client.get_entity(channel_url) 
 
     offset_id = 0
-    delete_count = 10
     games = list(await get_some_games(delete_count+5)) # берем с запасом на всякий случай
 
     if games:

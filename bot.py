@@ -2,9 +2,10 @@ from aiogram import Bot, Dispatcher, types, executor
 from aiogram.types import ParseMode
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 import asyncio
-from logger import logger
+import sys
 
 import signals
+from logger import logger
 from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user
@@ -30,8 +31,6 @@ async def send_signal():
 async def schedule_check_strategies():
     users = await get_users()
     while True:
-        logger.info('Загрузка новых сообщений')
-        await dump_channel_history()
         logger.info('Проверка сигналов')
         all_signals = await signals.check_all_signals()
         if all_signals:
@@ -61,7 +60,14 @@ async def on_startup(_):
     user_ids = await insert_users_from_config()
     for user_id in user_ids:
         await bot.send_message(user_id, 'Бот запущен!')
-    logger.info('Бот успешно запущен'.center(100, '-'))
+    logger.info('Бот успешно запущен')
+
+    logger.info('Загрузка новых сообщений')
+
+    if len(sys.argv) > 1 and sys.argv[1].isdigit():
+        await dump_channel_history(delete_count=int(sys.argv[1]))
+    else:
+        await dump_channel_history()
 
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_check_strategies())

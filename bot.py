@@ -8,7 +8,7 @@ import signals
 from logger import logger
 from history import dump_channel_history
 from telethon_client import user_client
-from db import get_users, init_db, insert_user
+from db import get_users, init_db, insert_user, delete_last_messages
 
 from get_config import get_config
 
@@ -31,6 +31,7 @@ async def send_signal():
 async def schedule_check_strategies():
     users = await get_users()
     while True:
+        await dump_channel_history()
         logger.info('Проверка сигналов')
         all_signals = await signals.check_all_signals()
         if all_signals:
@@ -65,9 +66,7 @@ async def on_startup(_):
     logger.info('Загрузка новых сообщений')
 
     if len(sys.argv) > 1 and sys.argv[1].isdigit():
-        await dump_channel_history(delete_count=int(sys.argv[1]))
-    else:
-        await dump_channel_history()
+        await delete_last_messages(int(sys.argv[1]))
 
     loop = asyncio.get_event_loop()
     loop.create_task(schedule_check_strategies())

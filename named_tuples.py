@@ -36,19 +36,23 @@ async def max_round_total_streak(games, total_name: str, round_num: int = 1):
             cur_streak = 0
     return DotDict({'total': total_name, 'streak': max_streak})
 
-async def cur_round_total_streak(games_reversed, round_num: int = 1) -> tuple[str, int]:
+async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool = False) -> tuple[str, int]:
     '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
     total_key_name = f'round{round_num}_total'
     cur_total = None
     streak = 0
     flag = False
+    is_first = True
     for game in games_reversed:
         total = game[total_key_name]
         if total:
             if not flag:
                 cur_total = total[0:2]
-                streak += 1
                 flag = True
+                if cut and is_first:
+                    is_first=False
+                    continue
+                streak += 1
             elif flag:
                 if total[0:2]==cur_total:
                     streak += 1
@@ -69,18 +73,22 @@ async def get_max_streak(games, field_name: str, right_value):
             cur_streak = 0
     return max_streak
 
-async def get_cur_streak(games_reversed, field_name: str):
+async def get_cur_streak(games_reversed, field_name: str, cut: bool = False):
     '''Возвращает длину последней серии field_name(нужного исхода)'''
     cur_total = None
     streak = 0
     flag = False
+    is_first = True
     for game in games_reversed:
         total = game[field_name]
         if total:
             if not flag:
                 cur_total = total
-                streak += 1
                 flag = True
+                if cut and is_first:
+                    is_first=False
+                    continue
+                streak += 1
             elif flag:
                 if total==cur_total:
                     streak += 1
@@ -174,3 +182,7 @@ class Game(NamedTuple):
     round9_time: str | None
     round9_total: str | None
 
+
+if __name__ == '__main__':
+    loop = asynio.get_event_loop()
+    loop.run_until_disconnect(main())

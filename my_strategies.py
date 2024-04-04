@@ -42,10 +42,8 @@ async def strategy2(last_games, all_games, all_games_rev):
     games = last_games
     last_game = ''
     for game in games:
-        logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
-            logger.info(f'Last game id: {last_game}')
             break
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
@@ -63,10 +61,8 @@ async def strategy3(last_games, all_games, all_games_rev):
     games = last_games
     last_game = ''
     for game in games:
-        logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
-            logger.info(f'Last game id: {last_game}')
             break
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
@@ -84,10 +80,8 @@ async def strategy4(last_games, all_games, all_games_rev):
     games = last_games
     last_game = ''
     for game in games:
-        logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
-            logger.info(f'Last game id: {last_game}')
             break
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
@@ -105,10 +99,8 @@ async def strategy5(last_games, all_games, all_games_rev):
     games = last_games
     last_game = ''
     for game in games:
-        logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
-            logger.info(f'Last game id: {last_game}')
             break
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)

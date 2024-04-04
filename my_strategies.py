@@ -20,7 +20,7 @@ async def strategy1(last_games, all_games, all_games_rev):
     round_num = 1
     games = last_games
     last_game = ''
-    for game in last_game:
+    for game in games:
         logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
@@ -43,7 +43,7 @@ async def strategy2(last_games, all_games, all_games_rev):
     round_num = 2
     games = last_games
     last_game = ''
-    for game in last_game:
+    for game in games:
         logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
@@ -64,7 +64,7 @@ async def strategy3(last_games, all_games, all_games_rev):
     round_num = 3
     games = last_games
     last_game = ''
-    for game in last_game:
+    for game in games:
         logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
@@ -85,7 +85,7 @@ async def strategy4(last_games, all_games, all_games_rev):
     round_num = 4
     games = last_games
     last_game = ''
-    for game in last_game:
+    for game in games:
         logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']
@@ -106,7 +106,7 @@ async def strategy5(last_games, all_games, all_games_rev):
     round_num = 5
     games = last_games
     last_game = ''
-    for game in last_game:
+    for game in games:
         logger.info('game round_total: '+game[f'round{round_num}_total'])
         if game[f'round{round_num}_total']:
             last_game = game['game_id']

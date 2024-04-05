@@ -29,9 +29,9 @@ async def strategy1(last_games, all_games, all_games_rev):
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
-    if cur_streak.streak >= 10:
+    if cur_streak.streak >= 6:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
-    elif cur_streak2.streak >= 10 and cur_streak.streak < cur_streak2.streak:
+    elif cur_streak2.streak >= 6 and cur_streak.streak < cur_streak2.streak:
         return f'Серия {cur_streak.total } в {round_num}-м раунде прервалась\nhttps://t.me/statamk10/{last_game}'
 
 
@@ -49,9 +49,9 @@ async def strategy2(last_games, all_games, all_games_rev):
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
-    if cur_streak.streak >= 10:
+    if cur_streak.streak >= 6:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
-    elif cur_streak2.streak >= 10 and cur_streak.streak < cur_streak2.streak:
+    elif cur_streak2.streak >= 6 and cur_streak.streak < cur_streak2.streak:
         return f'Серия {cur_streak.total } в {round_num}-м раунде прервалась\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
@@ -68,9 +68,9 @@ async def strategy3(last_games, all_games, all_games_rev):
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
-    if cur_streak.streak >= 10:
+    if cur_streak.streak >= 6:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
-    elif cur_streak2.streak >= 10 and cur_streak.streak < cur_streak2.streak:
+    elif cur_streak2.streak >= 6 and cur_streak.streak < cur_streak2.streak:
         return f'Серия {cur_streak.total } в {round_num}-м раунде прервалась\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
@@ -87,9 +87,9 @@ async def strategy4(last_games, all_games, all_games_rev):
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
-    if cur_streak.streak >= 10:
+    if cur_streak.streak >= 6:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
-    elif cur_streak2.streak >= 10 and cur_streak.streak < cur_streak2.streak:
+    elif cur_streak2.streak >= 6 and cur_streak.streak < cur_streak2.streak:
         return f'Серия {cur_streak.total } в {round_num}-м раунде прервалась\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
@@ -106,9 +106,9 @@ async def strategy5(last_games, all_games, all_games_rev):
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     #max_streak = await games.max_round_total_streak(total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
-    if cur_streak.streak >= 10:
+    if cur_streak.streak >= 6:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}\nhttps://t.me/statamk10/{last_game}'
-    elif cur_streak2.streak >= 10 and cur_streak.streak < cur_streak2.streak:
+    elif cur_streak2.streak >= 6 and cur_streak.streak < cur_streak2.streak:
         return f'Серия {cur_streak.total } в {round_num}-м раунде прервалась\nhttps://t.me/statamk10/{last_game}'
 
 @strategy

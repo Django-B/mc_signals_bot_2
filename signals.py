@@ -8,9 +8,9 @@ async def check_all_signals():
     '''Проверяет есть ли совпадения по стратегиям и возвращает их ответы'''
     signals = []
     last_games = await get_some_games(-200)
+    all_games = lambda: get_many_games('all')
+    all_games_rev = lambda: get_many_games('-all')
     for signal in strategies:
-        all_games = get_many_games('all')
-        all_games_rev = get_many_games('-all')
         res = await signal(last_games, all_games, all_games_rev)
         if res:
             signals.append(res)

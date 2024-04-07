@@ -28,7 +28,7 @@ async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     cur_streak = 0
     max_streak = 0
 
-    async for game in games:
+    async for game in games():
         if game[total_key_name] and game[total_key_name].startswith(total_name):
             cur_streak += 1
         else:

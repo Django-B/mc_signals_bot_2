@@ -48,6 +48,7 @@ async def strategy2(last_games, all_games, all_games_rev):
             break
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
+    print(cur_streak.total)
     max_streak = await max_round_total_streak(all_games, total_name=cur_streak.total, round_num=round_num)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}. Макс. серия {max_streak.streak}')
     if cur_streak.streak >= 6:

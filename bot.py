@@ -35,7 +35,7 @@ async def send_welcome(message: types.Message):
 @dp.message_handler()
 async def messages_handler(msg: types.Message):
     if msg.text == 'Макс. серия TB':
-        message = await msg.answer('Маск. серия TB:')
+        message = await msg.answer('Макс. серия TB:')
         games = lambda: get_many_games('all')
         round1 = await max_round_total_streak(games, 'TB', 1)
         message = await message.edit_text(message.text+f'\nРаунд 1 => {round1.streak}')
@@ -57,7 +57,7 @@ async def messages_handler(msg: types.Message):
         # ])
         # await msg.reply(res, reply=False)
     elif msg.text == 'Макс. серия TM':
-        message = await msg.answer('Маск. серия TM:')
+        message = await msg.answer('Макс. серия TM:')
         games = lambda: get_many_games('all')
         round1 = await max_round_total_streak(games, 'TM', 1)
         await message.edit_text(message.text+f'\nРаунд 1 => {round1.streak}')

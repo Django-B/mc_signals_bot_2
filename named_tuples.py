@@ -96,24 +96,29 @@ async def get_cur_streak(games_reversed, field_name: str, cut: bool = False):
                     break
     return DotDict({'total': cur_total, 'streak': streak})
 
-async def get_total_streak_count(games, total: str, round_num: int, min_len=2):
+
+async def get_total_streak_count(games, total, round_num):
     total = total[:2]
-    total_key = f'round{round_num}_total'
+    serial_runs = {}
     count = 0
-
-    data = {}
-
     async for game in games():
-        if game[total_key] == total:
+        if game[f'round{round_num}_total'] and game[f'round{round_num}_total'].startswith(total):
             count += 1
         else:
-            if count >= min_len:
-                if str(count) in data.keys():
-                    data[str(count)] += 1
+            if count > 1:
+                if count in serial_runs:
+                    serial_runs[count] += 1
                 else:
-                    data[str(count)] = 1
-            count = 0
-    return data
+                    serial_runs[count] = 1
+                count = 0
+    if count > 1:
+        if count in serial_runs:
+            serial_runs[count] += 1
+        else:
+            serial_runs[count] = 1
+    return serial_runs
+
+
 
 
 class Games(UserList):
@@ -205,8 +210,11 @@ async def main():
     from db import get_many_games
     from pprint import pprint
     games = lambda: get_many_games('all')
-    res = await get_total_streak_count(games, 'TB', 1)
+    res = await count_serial_runs(games, 'TB', 1)
+    mx = await max_round_total_streak(games, 'TB', 1)
+
     pprint(res)
+    pprint(mx)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

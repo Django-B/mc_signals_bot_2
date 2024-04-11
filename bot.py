@@ -10,7 +10,7 @@ from logger import logger
 from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
-from named_tuples import max_round_total_streak
+from named_tuples import max_round_total_streak, get_total_streak_count
 
 from get_config import get_config
 
@@ -65,9 +65,27 @@ async def messages_handler(msg: types.Message):
         round5 = await max_round_total_streak(games, 'TM', 5)
         message = await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\n✅')
 
+    elif msg.text == 'Статистика по сериям TB разной длины':
+        message = await msg.answer('Статистика по сериям TB:') 
+        games = lambda: get_many_games('all')
+        for i in range(1, 6):
+            message = await message.edit_text(message.text+'\nРаунд 1:')
+            stats = await get_total_streak_count(games, 'TB', i)
+            for length, count in sorted(stats.items()):
+                message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
+                
+        message = await message.edit_text(message.text+'\n')
+
     elif msg.text == 'Статистика по сериям TM разной длины':
         message = await msg.answer('Статистика по сериям TM:') 
         games = lambda: get_many_games('all')
+        for i in range(1, 6):
+            message = await message.edit_text(message.text+'\nРаунд 1:')
+            stats = await get_total_streak_count(games, 'TM', i)
+            for length, count in sorted(stats.items()):
+                message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
+                
+        message = await message.edit_text(message.text+'\n')
 
     
 

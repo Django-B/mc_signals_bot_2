@@ -23,19 +23,16 @@ class Strategies(UserList):
         pass
 
 async def max_round_total_streak(games, total_name: str, round_num: int = 1):
-    '''Возвращает максимальные длины серий тоталов(TB, TM) в нужном раунде всех игр'''
-    total_name = total_name[0:2]
-    total_key_name = f'round{round_num}_total'
-    cur_streak = 0
-    max_streak = 0
-
+    max_length = 0
+    current_length = 0
     async for game in games():
-        if game[total_key_name] and game[total_key_name].startswith(total_name):
-            cur_streak += 1
+        if game[f'round{round_num}_total'] and game[f'round{round_num}_total'].startswith(total_name[:2]):
+            current_length += 1
         else:
-            max_streak = max(max_streak, cur_streak)
-            cur_streak = 0
-    return DotDict({'total': total_name, 'streak': max_streak})
+            max_length = max(max_length, current_length)
+            current_length = 0
+    max_length = max(max_length, current_length)  # Обработка случая, когда серия заканчивается в конце списка
+    return max_length
 
 async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool = False) -> DotDict:
     '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
@@ -98,20 +95,19 @@ async def get_cur_streak(games_reversed, field_name: str, cut: bool = False):
 
 
 async def get_total_streak_count(games, total, round_num):
-    total = total[:2]
     serial_runs = {}
     count = 0
     async for game in games():
-        if game[f'round{round_num}_total'] and game[f'round{round_num}_total'].startswith(total):
+        if game[f'round{round_num}_total'] and game[f'round{round_num}_total'].startswith(total[:2]):
             count += 1
         else:
-            if count > 1:
+            if count > 0:
                 if count in serial_runs:
                     serial_runs[count] += 1
                 else:
                     serial_runs[count] = 1
                 count = 0
-    if count > 1:
+    if count > 0:
         if count in serial_runs:
             serial_runs[count] += 1
         else:
@@ -210,7 +206,7 @@ async def main():
     from db import get_many_games
     from pprint import pprint
     games = lambda: get_many_games('all')
-    res = await count_serial_runs(games, 'TB', 1)
+    res = await get_total_streak_count(games, 'TB', 1)
     mx = await max_round_total_streak(games, 'TB', 1)
 
     pprint(res)

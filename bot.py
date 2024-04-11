@@ -25,11 +25,14 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    button1 = KeyboardButton('Макс. серия TB')
-    button2 = KeyboardButton('Макс. серия TM')
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True)
-    reply_markup.add(button1)
-    reply_markup.add(button2)
+    buttons = [
+        KeyboardButton('Макс. серия TB'), # type: ignore
+        KeyboardButton('Макс. серия TM'), # type: ignore
+        KeyboardButton('Статистика по сериям TB разной длины'), # type: ignore
+        KeyboardButton('Статистика по сериям TM разной длины'), # type: ignore
+    ]
+    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True) # type: ignore
+    reply_markup.add(*buttons)
     await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat", reply_markup=reply_markup)
 
 @dp.message_handler()
@@ -46,38 +49,26 @@ async def messages_handler(msg: types.Message):
         round4 = await max_round_total_streak(games, 'TB', 4)
         message = await message.edit_text(message.text+f'\nРаунд 4 => {round4.streak}')
         round5 = await max_round_total_streak(games, 'TB', 5)
-        message = await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\nГотово!')
+        message = await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\n✅')
 
-        # res = 'Длины серий TB\n'+'\n'.join([
-        #     'Раунд 1 => '+str(round1.streak),
-        #     'Раунд 2 => '+str(round2.streak),
-        #     'Раунд 3 => '+str(round3.streak),
-        #     'Раунд 4 => '+str(round4.streak),
-        #     'Раунд 5 => '+str(round5.streak),
-        # ])
-        # await msg.reply(res, reply=False)
     elif msg.text == 'Макс. серия TM':
         message = await msg.answer('Макс. серия TM:')
         games = lambda: get_many_games('all')
         round1 = await max_round_total_streak(games, 'TM', 1)
-        await message.edit_text(message.text+f'\nРаунд 1 => {round1.streak}')
+        message = await message.edit_text(message.text+f'\nРаунд 1 => {round1.streak}')
         round2 = await max_round_total_streak(games, 'TM', 2)
-        await message.edit_text(message.text+f'\nРаунд 2 => {round2.streak}')
+        message = await message.edit_text(message.text+f'\nРаунд 2 => {round2.streak}')
         round3 = await max_round_total_streak(games, 'TM', 3)
-        await message.edit_text(message.text+f'\nРаунд 3 => {round3.streak}')
+        message = await message.edit_text(message.text+f'\nРаунд 3 => {round3.streak}')
         round4 = await max_round_total_streak(games, 'TM', 4)
-        await message.edit_text(message.text+f'\nРаунд 4 => {round4.streak}')
+        message = await message.edit_text(message.text+f'\nРаунд 4 => {round4.streak}')
         round5 = await max_round_total_streak(games, 'TM', 5)
-        await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\nГотово!')
+        message = await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\n✅')
 
-        # res = 'Длины серий TM\n'+'\n'.join([
-        #     'Раунд 1 => '+str(round1.streak),
-        #     'Раунд 2 => '+str(round2.streak),
-        #     'Раунд 3 => '+str(round3.streak),
-        #     'Раунд 4 => '+str(round4.streak),
-        #     'Раунд 5 => '+str(round5.streak),
-        # ])
-        # await msg.reply(res, reply=False)
+    elif msg.text == 'Статистика по сериям TM разной длины':
+        message = await msg.answer('Статистика по сериям TM:') 
+        games = lambda: get_many_games('all')
+
     
 
 async def schedule_check_strategies():
@@ -86,19 +77,27 @@ async def schedule_check_strategies():
         await dump_channel_history()
         logger.info('Проверка сигналов')
         all_signals = await signals.check_all_signals()
+
+        # read signals
+        try:
+            with open('bot_history.json', 'r') as f:
+                last_signals = json.load(f)['last_signals']
+        except FileNotFoundError:
+            last_signals = []
+        
         if all_signals:
             logger.info('Есть сигнал')
             for signal in all_signals:
+                logger.info(signal)
                 for user_id, username in users:
                     logger.info(f'Отправка сигнала пользователю {username}')
-                    try:
-                        with open('bot_history.json', 'r') as f:
-                            send = json.load(f)['last_msg'] != signal
-                    except:
-                        pass
-                    await bot.send_message(chat_id=user_id, text=signal, parse_mode=ParseMode.MARKDOWN)
-                    with open('bot_history.json', 'w') as f:
-                        json.dump({'last_msg': signal}, а)
+                    signal_exist = signal in last_signals
+                    if not signal_exist:
+                        await bot.send_message(chat_id=user_id, text=signal, parse_mode=ParseMode.MARKDOWN)
+
+        # write signals
+        with open('bot_history.json', 'w') as f:
+            json.dump({'last_signals': all_signals}, f)
 
         logger.info('Конец проверки сигналов')
         await asyncio.sleep(CHECK_INTERVAL)

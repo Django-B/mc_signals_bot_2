@@ -69,7 +69,7 @@ async def messages_handler(msg: types.Message):
         message = await msg.answer('Статистика по сериям TB:') 
         games = lambda: get_many_games('all')
         for i in range(1, 6):
-            message = await message.edit_text(message.text+'\nРаунд 1:')
+            message = await message.edit_text(message.text+f'\nРаунд {i}:')
             stats = await get_total_streak_count(games, 'TB', i)
             for length, count in sorted(stats.items()):
                 message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
@@ -80,7 +80,7 @@ async def messages_handler(msg: types.Message):
         message = await msg.answer('Статистика по сериям TM:') 
         games = lambda: get_many_games('all')
         for i in range(1, 6):
-            message = await message.edit_text(message.text+'\nРаунд 1:')
+            message = await message.edit_text(message.text+f'\nРаунд {i}:')
             stats = await get_total_streak_count(games, 'TM', i)
             for length, count in sorted(stats.items()):
                 message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')

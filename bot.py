@@ -23,6 +23,23 @@ BOT_OWNERS = config['bot_owners'].split()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
+async def set_bot_commands(dp):
+    await dp.bot.set_my_commands([
+        types.BotCommand("start", "Запустить бота"),
+        types.BotCommand("max_tb", "Макс. серия TB"),
+        types.BotCommand("max_tm", "Maкс. серия ТМ"),
+        types.BotCommand("streak_tb1", "Статистика по длинам ТБ"),
+        types.BotCommand("streak_tm1", "Статистика по длинам ТМ"),
+        types.BotCommand("streak_tb2", "Статистика по длинам ТБ"),
+        types.BotCommand("streak_tm2", "Статистика по длинам ТМ"),
+        types.BotCommand("streak_tb3", "Статистика по длинам ТБ"),
+        types.BotCommand("streak_tm3", "Статистика по длинам ТМ"),
+        types.BotCommand("streak_tb4", "Статистика по длинам ТБ"),
+        types.BotCommand("streak_tm4", "Статистика по длинам ТМ"),
+        types.BotCommand("streak_tb5", "Статистика по длинам ТБ"),
+        types.BotCommand("streak_tm5", "Статистика по длинам ТМ"),
+    ])
+
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     buttons = [
@@ -35,59 +52,64 @@ async def send_welcome(message: types.Message):
     reply_markup.add(*buttons)
     await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat", reply_markup=reply_markup)
 
-@dp.message_handler()
+
+@dp.message_handler(commands=['max_tb'])
 async def messages_handler(msg: types.Message):
-    if msg.text == 'Макс. серия TB':
-        message = await msg.answer('Макс. серия TB:')
-        games = lambda: get_many_games('all')
-        round1 = await max_round_total_streak(games, 'TB', 1)
-        message = await message.edit_text(message.text+f'\nРаунд 1 => {round1.streak}')
-        round2 = await max_round_total_streak(games, 'TB', 2)
-        message = await message.edit_text(message.text+f'\nРаунд 2 => {round2.streak}')
-        round3 = await max_round_total_streak(games, 'TB', 3)
-        message = await message.edit_text(message.text+f'\nРаунд 3 => {round3.streak}')
-        round4 = await max_round_total_streak(games, 'TB', 4)
-        message = await message.edit_text(message.text+f'\nРаунд 4 => {round4.streak}')
-        round5 = await max_round_total_streak(games, 'TB', 5)
-        message = await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\n✅')
+    message = await msg.answer('Макс. серия TB:')
+    games = lambda: get_many_games('all')
+    message_text = message.text
+    for i in range(1, 6):
+        round_streak = await max_round_total_streak(games, 'TB', i)
+        message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
+        
+    message = await message.edit_text(message.text+'\n✅')
 
-    elif msg.text == 'Макс. серия TM':
-        message = await msg.answer('Макс. серия TM:')
-        games = lambda: get_many_games('all')
-        round1 = await max_round_total_streak(games, 'TM', 1)
-        message = await message.edit_text(message.text+f'\nРаунд 1 => {round1.streak}')
-        round2 = await max_round_total_streak(games, 'TM', 2)
-        message = await message.edit_text(message.text+f'\nРаунд 2 => {round2.streak}')
-        round3 = await max_round_total_streak(games, 'TM', 3)
-        message = await message.edit_text(message.text+f'\nРаунд 3 => {round3.streak}')
-        round4 = await max_round_total_streak(games, 'TM', 4)
-        message = await message.edit_text(message.text+f'\nРаунд 4 => {round4.streak}')
-        round5 = await max_round_total_streak(games, 'TM', 5)
-        message = await message.edit_text(message.text+f'\nРаунд 5 => {round5.streak}\n✅')
+@dp.message_handler(commands=['max_tm'])
+async def messages_handler(msg: types.Message):
+    message = await msg.answer('Макс. серия TM:')
+    games = lambda: get_many_games('all')
+    message_text = message.text
+    for i in range(1, 6):
+        round_streak = await max_round_total_streak(games, 'TM', i)
+        message_text = message_text+f'\nРаунд {i} -> {round_streak}'
+        message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
+        
+    message = await message.edit_text(message_text+'\n✅')
 
-    elif msg.text == 'Статистика по сериям TB разной длины':
+@dp.message_handler(lambda message: message.text.startswith('/streak_tb'))
+async def streak_tb(msg: types.Message):
+    print('strek_tb')
+    num = msg.text[-1]
+    if num.isdigit() and int(num) > 0 and int(num) < 6:
         message = await msg.answer('Статистика по сериям TB:') 
         games = lambda: get_many_games('all')
-        for i in range(1, 6):
-            message = await message.edit_text(message.text+f'\nРаунд {i}:')
-            stats = await get_total_streak_count(games, 'TB', i)
-            for length, count in sorted(stats.items()):
-                message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
-                
-        message = await message.edit_text(message.text+'\n')
 
-    elif msg.text == 'Статистика по сериям TM разной длины':
+        message = await message.edit_text(message.text+f'\nРаунд {num}:')
+
+        stats = await get_total_streak_count(games, 'TB', int(num))
+        for length, count in sorted(stats.items()):
+            message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
+            
+        message = await message.edit_text(message.text+'\n✅')
+
+@dp.message_handler(lambda message: message.text.startswith('/streak_tm'))
+async def messages_handler(msg: types.Message):
+    print('strek_tm')
+    
+    num = msg.text[-1]
+    if num.isdigit() and int(num) > 0 and int(num) < 6:
         message = await msg.answer('Статистика по сериям TM:') 
         games = lambda: get_many_games('all')
-        for i in range(1, 6):
-            message = await message.edit_text(message.text+f'\nРаунд {i}:')
-            stats = await get_total_streak_count(games, 'TM', i)
-            for length, count in sorted(stats.items()):
-                message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
-                
-        message = await message.edit_text(message.text+'\n')
+        
+        message = await message.edit_text(message.text+f'\nРаунд {num}:')
 
-    
+        stats = await get_total_streak_count(games, 'TM', int(num))
+        for length, count in sorted(stats.items()):
+            message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
+
+        message = await message.edit_text(message.text+'\n✅')
+
+
 
 async def schedule_check_strategies():
     users = await get_users()
@@ -130,6 +152,7 @@ async def insert_users_from_config():
     return user_ids
 
 async def on_startup(_):
+    await set_bot_commands(dp)
     logger.info('Инициализация базы данных')
     await init_db()
     logger.info('База данных успешно инициализирована')

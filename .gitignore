@@ -8,3 +8,4 @@ test.py
 *.session
 *-journal
 *.log
+bot_history.json

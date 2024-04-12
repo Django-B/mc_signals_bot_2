@@ -28,36 +28,27 @@ async def set_bot_commands(dp):
         types.BotCommand("start", "Запустить бота"),
         types.BotCommand("max_tb", "Макс. серия TB"),
         types.BotCommand("max_tm", "Maкс. серия ТМ"),
-        types.BotCommand("streak_tb1", "Статистика по длинам ТБ"),
-        types.BotCommand("streak_tm1", "Статистика по длинам ТМ"),
-        types.BotCommand("streak_tb2", "Статистика по длинам ТБ"),
-        types.BotCommand("streak_tm2", "Статистика по длинам ТМ"),
-        types.BotCommand("streak_tb3", "Статистика по длинам ТБ"),
-        types.BotCommand("streak_tm3", "Статистика по длинам ТМ"),
-        types.BotCommand("streak_tb4", "Статистика по длинам ТБ"),
-        types.BotCommand("streak_tm4", "Статистика по длинам ТМ"),
-        types.BotCommand("streak_tb5", "Статистика по длинам ТБ"),
-        types.BotCommand("streak_tm5", "Статистика по длинам ТМ"),
+        types.BotCommand("streak_tb1", "Статистика ТБ 1 раунд"),
+        types.BotCommand("streak_tm1", "Статистика ТМ 1 раунд"),
+        types.BotCommand("streak_tb2", "Статистика ТБ 2 раунд"),
+        types.BotCommand("streak_tm2", "Статистика ТМ 2 раунд"),
+        types.BotCommand("streak_tb3", "Статистика ТБ 3 раунд"),
+        types.BotCommand("streak_tm3", "Статистика ТМ 3 раунд"),
+        types.BotCommand("streak_tb4", "Статистика ТБ 4 раунд"),
+        types.BotCommand("streak_tm4", "Статистика ТМ 4 раунд"),
+        types.BotCommand("streak_tb5", "Статистика ТБ 5 раунд"),
+        types.BotCommand("streak_tm5", "Статистика ТМ 5 раунд"),
     ])
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    buttons = [
-        KeyboardButton('Макс. серия TB'), # type: ignore
-        KeyboardButton('Макс. серия TM'), # type: ignore
-        KeyboardButton('Статистика по сериям TB разной длины'), # type: ignore
-        KeyboardButton('Статистика по сериям TM разной длины'), # type: ignore
-    ]
-    reply_markup = ReplyKeyboardMarkup(resize_keyboard=True) # type: ignore
-    reply_markup.add(*buttons)
-    await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat", reply_markup=reply_markup)
+    await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat")
 
 
 @dp.message_handler(commands=['max_tb'])
-async def messages_handler(msg: types.Message):
+async def max_tb(msg: types.Message):
     message = await msg.answer('Макс. серия TB:')
     games = lambda: get_many_games('all')
-    message_text = message.text
     for i in range(1, 6):
         round_streak = await max_round_total_streak(games, 'TB', i)
         message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
@@ -65,7 +56,7 @@ async def messages_handler(msg: types.Message):
     message = await message.edit_text(message.text+'\n✅')
 
 @dp.message_handler(commands=['max_tm'])
-async def messages_handler(msg: types.Message):
+async def max_tm(msg: types.Message):
     message = await msg.answer('Макс. серия TM:')
     games = lambda: get_many_games('all')
     message_text = message.text
@@ -112,6 +103,7 @@ async def messages_handler(msg: types.Message):
 
 
 async def schedule_check_strategies():
+    last_signals_limit = 1000
     users = await get_users()
     while True:
         await dump_channel_history()
@@ -124,6 +116,8 @@ async def schedule_check_strategies():
                 last_signals = json.load(f)['last_signals']
         except FileNotFoundError:
             last_signals = []
+
+        plus_signals = []
         
         if all_signals:
             logger.info('Есть сигнал')
@@ -131,13 +125,18 @@ async def schedule_check_strategies():
                 logger.info(signal)
                 for user_id, username in users:
                     logger.info(f'Отправка сигнала пользователю {username}')
-                    signal_exist = signal in last_signals
-                    if not signal_exist:
+                    if not signal in last_signals:
                         await bot.send_message(chat_id=user_id, text=signal, parse_mode=ParseMode.MARKDOWN)
 
-        # write signals
+                        plus_signals.append(signal)
+                        
+                        
+        new_last_signals = last_signals + plus_signals
+        if len(new_last_signals) > last_signals_limit:
+            del new_last_signals[:len(new_last_signals)-last_signals_limit]
+
         with open('bot_history.json', 'w') as f:
-            json.dump({'last_signals': all_signals}, f)
+            json.dump({'last_signals': new_last_signals}, f)
 
         logger.info('Конец проверки сигналов')
         await asyncio.sleep(CHECK_INTERVAL)

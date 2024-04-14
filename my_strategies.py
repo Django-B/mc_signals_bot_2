@@ -28,8 +28,8 @@ async def strategy1(last_games, all_games, all_games_rev):
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
-    print(f'{cur_streak.streak=}')
-    print(f'{cur_streak2.streak=}')
+    logger.info(f'{cur_streak.streak=}')
+    logger.info(f'{cur_streak2.streak=}')
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
 
@@ -50,6 +50,8 @@ async def strategy2(last_games, all_games, all_games_rev):
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
+    logger.info(f'{cur_streak.streak=}')
+    logger.info(f'{cur_streak2.streak=}')
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
@@ -68,6 +70,8 @@ async def strategy3(last_games, all_games, all_games_rev):
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
+    logger.info(f'{cur_streak.streak=}')
+    logger.info(f'{cur_streak2.streak=}')
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
@@ -86,6 +90,8 @@ async def strategy4(last_games, all_games, all_games_rev):
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
+    logger.info(f'{cur_streak.streak=}')
+    logger.info(f'{cur_streak2.streak=}')
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
@@ -104,6 +110,8 @@ async def strategy5(last_games, all_games, all_games_rev):
     cur_streak = await cur_round_total_streak(games, round_num=round_num)
     cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
     logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
+    logger.info(f'{cur_streak.streak=}')
+    logger.info(f'{cur_streak2.streak=}')
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
@@ -474,19 +482,15 @@ async def strategy13(last_games, all_games, all_games_rev):
         return f'Текущая серия игр {val1} и {val2} в {round1_num}-м и {round2_num}-м раундах = {cur_streak}\nhttps://t.me/statamk10/{last_game}'
 
 
-async def test_strategy():
-    res = await cur_round_total_streak(games, 4)
-    print(res)
-
-
 async def test():
-    #await dump_channel_history()
-    games = await db.get_games()
-    res = await test_strategy(games)
-    print(res)
+    import db
+    print('test')
+    games = await db.get_some_games(count=-100)
+    for i in range(1, 5):
+        streak1 = await cur_round_total_streak(games, round_num=i)
+        streak2 = await cur_round_total_streak(games, round_num=i, cut=True )
+        print(streak1, streak2)
 
 if __name__=='__main__':
-    from history import dump_channel_history
-    import db
     loop = asyncio.get_event_loop()
     loop.run_until_complete(test())

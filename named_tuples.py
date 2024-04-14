@@ -40,21 +40,22 @@ async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool =
     cur_total = None
     streak = 0
     flag = False
-
-    if cut:
-        games_reversed = games_reversed[1:]
+    games = games_reversed
     for game in games_reversed:
         total = game[total_key_name]
         if total:
-            if not flag:
-                cur_total = total[0:2]
-                flag = True
-                streak += 1
-            elif flag:
-                if total[0:2]==cur_total:
+            if not cut:
+                if not flag:
+                    cur_total = total[0:2]
+                    flag = True
                     streak += 1
-                else: 
-                    break
+                elif flag:
+                    if total[0:2]==cur_total:
+                        streak += 1
+                    else: 
+                        break
+            else:
+                cut = False
     return DotDict({'total': cur_total, 'streak': streak})
 
 async def get_max_streak(games, field_name: str, right_value):

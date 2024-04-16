@@ -34,7 +34,7 @@ async def strategy1(last_games, all_games, all_games_rev):
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
 
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
-        return f'Серия {cur_streak.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
+        return f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
 
 
 @strategy
@@ -55,7 +55,7 @@ async def strategy2(last_games, all_games, all_games_rev):
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
-        return f'Серия {cur_streak.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
+        return f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
 async def strategy3(last_games, all_games, all_games_rev):
@@ -75,7 +75,7 @@ async def strategy3(last_games, all_games, all_games_rev):
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
-        return f'Серия {cur_streak.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
+        return f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
 async def strategy4(last_games, all_games, all_games_rev):
@@ -95,7 +95,7 @@ async def strategy4(last_games, all_games, all_games_rev):
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
-        return f'Серия {cur_streak.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
+        return f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
 async def strategy5(last_games, all_games, all_games_rev):
@@ -115,7 +115,7 @@ async def strategy5(last_games, all_games, all_games_rev):
     if cur_streak.streak >= 2:
         return f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}'
     elif cur_streak2.streak >= 2 and cur_streak.streak == 1:
-        return f'Серия {cur_streak.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
+        return f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}'
 
 @strategy
 async def strategy6(last_games, all_games, all_games_rev):

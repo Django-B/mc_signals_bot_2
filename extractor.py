@@ -150,9 +150,9 @@ async def extract_game_data(message) -> Game | None: # type: ignore
     round9 = await extract_round_data(message_text, 9)
 
     def check_tmmm_tbbb(round_time):
-        if round_time < float(min_num_totals[0]): # type: ignore
+        if int(round_time) < float(min_num_totals[0]): # type: ignore
             return 'TMMM'
-        elif round_time > float(max_num_totals[0]): # type: ignore
+        elif int(round_time) > float(max_num_totals[0]): # type: ignore
             return 'TBBB'
     
     if not all([

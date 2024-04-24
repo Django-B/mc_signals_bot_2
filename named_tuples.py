@@ -22,11 +22,26 @@ class Strategies(UserList):
     async def get_signals(self, games):
         pass
 
+async def is_equal_totals(total1, total2):
+    '''
+        тбб=тб=тббб
+        тмм=тм=тммм
+    '''
+    if total1 and total2 and any(
+        total1 == 'TB' and total2 in ('TB', 'TBBB'),
+        total1 == 'TBB' and total2 in ('TBB', 'TB', 'TBBB'),
+        total1 == 'TBBB' and total2 in ('TBBB'),
+        total1 == 'TM' and total2 in ('TM', 'TMMM'),
+        total1 == 'TMM' and total2 in ('TMM', 'TM', 'TMMM'),
+        total1 == 'TMMM' and total2 in ('TMMM'),
+    ):
+        return True
+
 async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     max_length = 0
     current_length = 0
     async for game in games():
-        if game[f'round{round_num}_total'] and game[f'round{round_num}_total'].startswith(total_name[:2]):
+        if await is_equal_totals(total_name, game[f'round{round_num}_total']):
             current_length += 1
         else:
             max_length = max(max_length, current_length)
@@ -50,7 +65,7 @@ async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool =
                     flag = True
                     streak += 1
                 elif flag:
-                    if total[0:2]==cur_total:
+                    if await is_equal_totals(cur_total, total):
                         streak += 1
                     else: 
                         break

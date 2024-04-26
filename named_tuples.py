@@ -61,7 +61,7 @@ async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool =
         if total:
             if not cut:
                 if not flag:
-                    cur_total = total[0:2]
+                    cur_total = total
                     flag = True
                     streak += 1
                 elif flag:

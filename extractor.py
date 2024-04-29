@@ -149,12 +149,6 @@ async def extract_game_data(message) -> Game | None: # type: ignore
     round8 = await extract_round_data(message_text, 8)
     round9 = await extract_round_data(message_text, 9)
 
-    def check_tmmm_tbbb(round_time):
-        if round_time:
-            if int(round_time) < float(min_num_totals[0]): # type: ignore
-                return 'TMMM'
-            elif int(round_time) > float(max_num_totals[0]): # type: ignore
-                return 'TBBB'
     
     if not all([
         date,
@@ -194,40 +188,40 @@ async def extract_game_data(message) -> Game | None: # type: ignore
         round1_winner=round1['winner'], # type: ignore
         round1_finish=round1['finish'], # type: ignore
         round1_time=round1['time'], # type: ignore
-        round1_total=round1['total'] or check_tmmm_tbbb(round1['time']), # type: ignore
+        round1_total=round1['total'], # type: ignore
         round2_winner=round2['winner'], # type: ignore
         round2_finish=round2['finish'], # type: ignore
         round2_time=round2['time'], # type: ignore
-        round2_total=round2['total'] or check_tmmm_tbbb(round2['time']), # type: ignore
+        round2_total=round2['total'], # type: ignore
         round3_winner=round3['winner'], # type: ignore
         round3_finish=round3['finish'], # type: ignore
         round3_time=round3['time'], # type: ignore
-        round3_total=round3['total'] or check_tmmm_tbbb(round3['time']), # type: ignore
+        round3_total=round3['total'], # type: ignore
         round4_winner=round4['winner'], # type: ignore
         round4_finish=round4['finish'], # type: ignore
         round4_time=round4['time'], # type: ignore
-        round4_total=round4['total'] or check_tmmm_tbbb(round4['time']), # type: ignore
+        round4_total=round4['total'], # type: ignore
         round5_winner=round5['winner'], # type: ignore
         round5_finish=round5['finish'], # type: ignore
         round5_time=round5['time'], # type: ignore
-        round5_total=round5['total'] or check_tmmm_tbbb(round5['time']), # type: ignore
+        round5_total=round5['total'], # type: ignore
         round6_winner=round6['winner'], # type: ignore
         round6_finish=round6['finish'], # type: ignore
         round6_time=round6['time'], # type: ignore
-        round6_total=round6['total'] or check_tmmm_tbbb(round6['time']), # type: ignore
+        round6_total=round6['total'], # type: ignore
         round7_winner=round7['winner'], # type: ignore
         round7_finish=round7['finish'], # type: ignore
         round7_time=round7['time'], # type: ignore
-        round7_total=round7['total'] or check_tmmm_tbbb(round7['time']), # type: ignore
+        round7_total=round7['total'], # type: ignore
         round8_winner=round8['winner'],
         round8_finish=round8['finish'], # type: ignore
         round8_time=round8['time'], # type: ignore
-        round8_total=round8['total'] or check_tmmm_tbbb(round8['time']), # type: ignore
+        round8_total=round8['total'], # type: ignore
         round9_winner=round9['winner'], # type: ignore
         round9_finish=round9['finish'], # type: ignore
         round9_time=round9['time'], # type: ignore
-        round9_total=round9['total'] or check_tmmm_tbbb(round9['time']) # type: ignore
-    )
+        round9_total=round9['total']) # type: ignore
+    
 
     return game
 

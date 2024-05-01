@@ -13,7 +13,10 @@ async def check_all_signals():
     for signal in strategies:
         res = await signal(last_games, all_games, all_games_rev)
         if res:
-            signals.append(res)
+            if type(res)==list:
+                signals.extend(res)
+            else:
+                signals.append(res)
     # signals = await asyncio.gather(*wrap_strategies)
     return [signal for signal in signals if signal]
 

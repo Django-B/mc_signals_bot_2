@@ -22,18 +22,18 @@ class Strategies(UserList):
     async def get_signals(self, games):
         pass
 
-async def is_equal_totals(total1, total2):
+async def is_equal_totals(need_total, cur_total):
     '''
         тбб=тб=тббб
         тмм=тм=тммм
     '''
-    if total1 and total2 and any([
-        total1 == 'TB' and total2 in ('TB', 'TBBB'),
-        total1 == 'TBB' and total2 in ('TBB', 'TB', 'TBBB'),
-        total1 == 'TBBB' and total2 in ('TBBB'),
-        total1 == 'TM' and total2 in ('TM', 'TMMM'),
-        total1 == 'TMM' and total2 in ('TMM', 'TM', 'TMMM'),
-        total1 == 'TMMM' and total2 in ('TMMM'),
+    if need_total and cur_total and any([
+        need_total == 'TB' and cur_total in ('TB', 'TBBB'),
+        need_total == 'TBB' and cur_total in ('TBB', 'TB', 'TBBB'),
+        need_total == 'TM' and cur_total in ('TM', 'TMMM'),
+        need_total == 'TMM' and cur_total in ('TMM', 'TM', 'TMMM'),
+        need_total == 'TBBB' and cur_total in ('TM', 'TB', 'TBB'),
+        need_total == 'TMMM' and cur_total in ('TM', 'TB', 'TMM'),
     ]):
         return True
 
@@ -49,13 +49,15 @@ async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     max_length = max(max_length, current_length)  # Обработка случая, когда серия заканчивается в конце списка
     return max_length
 
-async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool = False) -> DotDict:
+async def cur_round_total_streak(games_reversed, round_num: int = 1, total: str | None = None, cut: bool = False) -> DotDict:
     '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
     total_key_name = f'round{round_num}_total'
     cur_total = None
     streak = 0
     flag = False
-    games = games_reversed
+    if total:
+        cur_total = total
+        flag = True
     for game in games_reversed:
         total = game[total_key_name]
         if total:
@@ -72,6 +74,7 @@ async def cur_round_total_streak(games_reversed, round_num: int = 1, cut: bool =
             else:
                 cut = False
     return DotDict({'total': cur_total, 'streak': streak})
+
 
 async def get_max_streak(games, field_name: str, right_value):
     '''Возвращает максимальную длину серии field_name(нужного исхода) cо значением right_value'''
@@ -219,14 +222,7 @@ class Game(NamedTuple):
     round9_total: str | None
 
 async def main():
-    from db import get_many_games
-    from pprint import pprint
-    games = lambda: get_many_games('all')
-    res = await get_total_streak_count(games, 'TB', 1)
-    mx = await max_round_total_streak(games, 'TB', 1)
-
-    pprint(res)
-    pprint(mx)
+    pass
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

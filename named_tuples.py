@@ -29,9 +29,9 @@ async def is_equal_totals(need_total, cur_total):
     '''
     if need_total and cur_total and any([
         need_total == 'TB' and cur_total in ('TB', 'TBBB'),
-        need_total == 'TBB' and cur_total in ('TBB', 'TB', 'TBBB'),
+        need_total == 'TBB' and cur_total in ('TBB'),
         need_total == 'TM' and cur_total in ('TM', 'TMMM'),
-        need_total == 'TMM' and cur_total in ('TMM', 'TM', 'TMMM'),
+        need_total == 'TMM' and cur_total in ('TMM'),
         need_total == 'TBBB' and cur_total in ('TM', 'TB', 'TBB'),
         need_total == 'TMMM' and cur_total in ('TM', 'TB', 'TMM'),
     ]):

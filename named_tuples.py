@@ -135,19 +135,53 @@ async def get_cur_streak(games_reversed, field_name: str, cut: bool = False):
     return DotDict({'total': cur_total, 'streak': streak})
 
 
+'''
 async def get_total_streak_count(games, total, round_num, min_count=10):
     min_count -= 1
     serial_runs = {}
     count = 0
+    b = []
     async for game in games():
-        if game[f'round{round_num}_total'] and (await is_equal_totals(total, game[f'round{round_num}_total'])):
-            count += 1
+        if game[f'round{round_num}_total']:
+            if (await is_equal_totals(total, game[f'round{round_num}_total'])):
+                count += 1
+                b.append(game[f'round{round_num}_total'])
+                print(game[f'round{round_num}_total'], count)
+            else:
+                print('##############################################')
+                if count > 17:
+                    # print(b)
+                    # print('\n\n')
+                    b = []
+                if count > min_count:
+                    if count in serial_runs:
+                        serial_runs[count] += 1
+                    else:
+                        serial_runs[count] = 1
+                    count = 0
+    if count > min_count:
+        if count in serial_runs:
+            serial_runs[count] += 1
         else:
-            if count > min_count:
-                if count in serial_runs:
-                    serial_runs[count] += 1
-                else:
-                    serial_runs[count] = 1
+            serial_runs[count] = 1
+    return serial_runs
+'''
+
+async def get_total_streak_count(games, total, round_num, min_count=10):
+    min_count -= 1
+    serial_runs = {}
+    count = 0
+    b = []
+    async for game in games():
+        if game[f'round{round_num}_total']:
+            if (await is_equal_totals(total, game[f'round{round_num}_total'])):
+                count += 1
+            else:
+                if count > min_count:
+                    if count in serial_runs:
+                        serial_runs[count] += 1
+                    else:
+                        serial_runs[count] = 1
                 count = 0
     if count > min_count:
         if count in serial_runs:
@@ -155,7 +189,6 @@ async def get_total_streak_count(games, total, round_num, min_count=10):
         else:
             serial_runs[count] = 1
     return serial_runs
-
 
 
 

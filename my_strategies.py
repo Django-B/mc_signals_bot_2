@@ -558,7 +558,9 @@ async def test():
     import db
     print('test')
     games = db.get_many_games('all')
-    print(await max_round_total_streak(lambda: games, 'TB', 1))
+    from named_tuples import get_total_streak_count
+    a = await get_total_streak_count(lambda: games, 'TB', 1)
+    print(a)
 
 if __name__=='__main__':
     loop = asyncio.get_event_loop()

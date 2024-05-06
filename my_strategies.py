@@ -557,11 +557,8 @@ async def strategy13(last_games, all_games, all_games_rev):
 async def test():
     import db
     print('test')
-    games = await db.get_some_games(count=-100)
-    for i in range(1, 5):
-        streak1 = await cur_round_total_streak(games, round_num=i)
-        streak2 = await cur_round_total_streak(games, round_num=i, cut=True )
-        print(streak1, streak2)
+    games = db.get_many_games('all')
+    print(await max_round_total_streak(lambda: games, 'TB', 1))
 
 if __name__=='__main__':
     loop = asyncio.get_event_loop()

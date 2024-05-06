@@ -27,24 +27,54 @@ async def set_bot_commands(dp):
     await dp.bot.set_my_commands([
         types.BotCommand("start", "Запустить бота"),
         types.BotCommand("max_tb", "Макс. серия TB"),
+        types.BotCommand("max_tbb", "Макс. серия TBB"),
+        types.BotCommand("max_tbbb", "Макс. серия TBBB"),
         types.BotCommand("max_tm", "Maкс. серия ТМ"),
+        types.BotCommand("max_tmm", "Maкс. серия ТММ"),
+        types.BotCommand("max_tmmm", "Maкс. серия ТМММ"),
+        types.BotCommand("max_tm", "Maкс. серия ТМ"),
+
         types.BotCommand("streak_tb1", "Статистика ТБ 1 раунд"),
+        types.BotCommand("streak_tbb1", "Статистика ТБ 1 раунд"),
+        types.BotCommand("streak_tbbb1", "Статистика ТБ 1 раунд"),
         types.BotCommand("streak_tm1", "Статистика ТМ 1 раунд"),
+        types.BotCommand("streak_tmm1", "Статистика ТММ 1 раунд"),
+        types.BotCommand("streak_tmmm1", "Статистика ТМММ 1 раунд"),
+
         types.BotCommand("streak_tb2", "Статистика ТБ 2 раунд"),
+        types.BotCommand("streak_tbb2", "Статистика ТББ 2 раунд"),
+        types.BotCommand("streak_tbbb2", "Статистика ТБББ 2 раунд"),
         types.BotCommand("streak_tm2", "Статистика ТМ 2 раунд"),
+        types.BotCommand("streak_tmm2", "Статистика ТММ 2 раунд"),
+        types.BotCommand("streak_tmmm2", "Статистика ТМММ 2 раунд"),
+
         types.BotCommand("streak_tb3", "Статистика ТБ 3 раунд"),
+        types.BotCommand("streak_tbb3", "Статистика ТББ 3 раунд"),
+        types.BotCommand("streak_tbbb3", "Статистика ТБББ 3 раунд"),
         types.BotCommand("streak_tm3", "Статистика ТМ 3 раунд"),
+        types.BotCommand("streak_tmm3", "Статистика ТММ 3 раунд"),
+        types.BotCommand("streak_tmmm3", "Статистика ТМММ 3 раунд"),
+
         types.BotCommand("streak_tb4", "Статистика ТБ 4 раунд"),
+        types.BotCommand("streak_tbb4", "Статистика ТББ 4 раунд"),
+        types.BotCommand("streak_tbbb4", "Статистика ТБББ 4 раунд"),
         types.BotCommand("streak_tm4", "Статистика ТМ 4 раунд"),
+        types.BotCommand("streak_tmm4", "Статистика ТММ 4 раунд"),
+        types.BotCommand("streak_tmmm4", "Статистика ТМММ 4 раунд"),
+
         types.BotCommand("streak_tb5", "Статистика ТБ 5 раунд"),
+        types.BotCommand("streak_tbb5", "Статистика ТББ 5 раунд"),
+        types.BotCommand("streak_tbbb5", "Статистика ТБББ 5 раунд"),
         types.BotCommand("streak_tm5", "Статистика ТМ 5 раунд"),
+        types.BotCommand("streak_tmm5", "Статистика ТММ 5 раунд"),
+        types.BotCommand("streak_tmmm5", "Статистика ТМММ 5 раунд"),
     ])
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat")
 
-
+'''
 @dp.message_handler(commands=['max_tb'])
 async def max_tb(msg: types.Message):
     message = await msg.answer('Макс. серия TB:')
@@ -66,7 +96,39 @@ async def max_tm(msg: types.Message):
         message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
         
     message = await message.edit_text(message_text+'\n✅')
+'''
 
+@dp.message_handler(lambda message: message.text.startswith('/max_'))
+async def max_tm(msg: types.Message):
+    total_name = msg.text.split('_')[-1].upper()
+    message = await msg.answer(f'Макс. серия {total_name}:')
+    games = lambda: get_many_games('all')
+    message_text = message.text
+    for i in range(1, 6):
+        round_streak = await max_round_total_streak(games, total_name, i)
+        message_text = message_text+f'\nРаунд {i} -> {round_streak}'
+        message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
+        
+    message = await message.edit_text(message_text+'\n✅')
+
+@dp.message_handler(lambda message: message.text.startswith('/streak_'))
+async def streak_tb(msg: types.Message):
+    total_name = msg.text.split('_')[-1][:-1].upper()
+    num = msg.text[-1]
+    if num.isdigit() and int(num) > 0 and int(num) < 6:
+        message = await msg.answer(f'Статистика по сериям {total_name} раунд {num}:') 
+        games = lambda: get_many_games('all')
+
+        stats = await get_total_streak_count(games, total_name, int(num))
+        from pprint import pprint
+        pprint(stats)
+        answer_text = message.text
+        for length, count in sorted(stats.items()):
+            answer_text = answer_text+f'\nДлина серии {length} -> Кол-во {count}'
+        answer_text = answer_text+'\n✅'
+        message = await message.edit_text(answer_text)
+
+'''
 @dp.message_handler(lambda message: message.text.startswith('/streak_tb'))
 async def streak_tb(msg: types.Message):
     print('strek_tb')
@@ -99,7 +161,7 @@ async def messages_handler(msg: types.Message):
             message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
 
         message = await message.edit_text(message.text+'\n✅')
-
+'''
 
 
 async def schedule_check_strategies():

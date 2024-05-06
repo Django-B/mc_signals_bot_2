@@ -28,9 +28,9 @@ async def is_equal_totals(need_total, cur_total):
         тмм=тм=тммм
     '''
     if need_total and cur_total and any([
-        need_total == 'TB' and cur_total in ('TB', 'TBBB'),
+        need_total == 'TB' and cur_total in ('TB', 'TBB'),
         need_total == 'TBB' and cur_total in ('TBB',),
-        need_total == 'TM' and cur_total in ('TM', 'TMMM'),
+        need_total == 'TM' and cur_total in ('TM', 'TMM'),
         need_total == 'TMM' and cur_total in ('TMM',),
         need_total == 'TBBB' and cur_total in ('TM', 'TB', 'TBB'),
         need_total == 'TMMM' and cur_total in ('TM', 'TB', 'TMM'),
@@ -40,14 +40,36 @@ async def is_equal_totals(need_total, cur_total):
 async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     max_length = 0
     current_length = 0
+    b = []
     async for game in games():
-        if await is_equal_totals(total_name, game[f'round{round_num}_total']):
-            current_length += 1
-        else:
-            max_length = max(max_length, current_length)
-            current_length = 0
+        if game[f'round{round_num}_total']:
+            if (await is_equal_totals(total_name, game[f'round{round_num}_total'])):
+                current_length += 1
+                # b.append(game[f'round{round_num}_total'])
+            else:
+                max_length = max(max_length, current_length)
+                # if current_length>1:
+                    # print(b, current_length)
+                    # b = []
+                current_length = 0
     max_length = max(max_length, current_length)  # Обработка случая, когда серия заканчивается в конце списка
     return max_length
+'''
+
+async def max_round_total_streak(games, total_name: str, round_num: int = 1):
+    max_seq = 0
+    current_seq = 0
+    async for game in games():
+        game = game[f'round{round_num}_total']
+        if game:
+            if (await is_equal_totals(total_name, game)):
+                current_seq += 1
+                if current_seq > max_seq:
+                    max_seq = current_seq
+            else:
+                current_seq = 0
+    return max_seq
+'''
 
 async def cur_round_total_streak(games_reversed, round_num: int = 1, total: str | None = None, cut: bool = False) -> DotDict:
     '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
@@ -113,20 +135,21 @@ async def get_cur_streak(games_reversed, field_name: str, cut: bool = False):
     return DotDict({'total': cur_total, 'streak': streak})
 
 
-async def get_total_streak_count(games, total, round_num):
+async def get_total_streak_count(games, total, round_num, min_count=10):
+    min_count -= 1
     serial_runs = {}
     count = 0
     async for game in games():
-        if game[f'round{round_num}_total'] and game[f'round{round_num}_total'].startswith(total[:2]):
+        if game[f'round{round_num}_total'] and (await is_equal_totals(total, game[f'round{round_num}_total'])):
             count += 1
         else:
-            if count > 0:
+            if count > min_count:
                 if count in serial_runs:
                     serial_runs[count] += 1
                 else:
                     serial_runs[count] = 1
                 count = 0
-    if count > 0:
+    if count > min_count:
         if count in serial_runs:
             serial_runs[count] += 1
         else:

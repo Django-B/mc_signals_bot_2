@@ -26,6 +26,8 @@ dp = Dispatcher(bot)
 async def set_bot_commands(dp):
     await dp.bot.set_my_commands([
         types.BotCommand("start", "Запустить бота"),
+        types.BotCommand("set_streak_limit", "Изменить переменную streak_limit"),
+
         types.BotCommand("max_tb", "Макс. серия TB"),
         types.BotCommand("max_tbb", "Макс. серия TBB"),
         types.BotCommand("max_tbbb", "Макс. серия TBBB"),

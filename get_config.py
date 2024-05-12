@@ -8,7 +8,7 @@ def get_config(section='main'):
     config = configparser.ConfigParser()
     config.read(config_filename)
 
-    config = config[section]
+    config = config[section] if section in config else config
 
     return config
 

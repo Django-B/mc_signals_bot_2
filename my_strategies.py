@@ -6,7 +6,6 @@ from named_tuples import cur_round_total_streak, max_round_total_streak, get_max
 from get_config import get_config
 
 
-config = get_config('variables')
 
 strategies = []
 
@@ -16,7 +15,7 @@ def strategy(func):
         await func(*args, **kwargs)
     return wrapper
 
-
+config = get_config('variables')
 streak_limit = int(config['streak_limit']) if 'streak_limit' in config else 10
 
 @strategy

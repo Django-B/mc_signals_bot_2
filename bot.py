@@ -12,7 +12,7 @@ from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
 
-from get_config import get_config
+from get_config import get_config, get_or_create_config
 
 config = get_config()
 
@@ -74,29 +74,18 @@ async def set_bot_commands(dp):
 async def send_welcome(message: types.Message):
     await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat")
 
-'''
-@dp.message_handler(commands=['max_tb'])
-async def max_tb(msg: types.Message):
-    message = await msg.answer('Макс. серия TB:')
-    games = lambda: get_many_games('all')
-    for i in range(1, 6):
-        round_streak = await max_round_total_streak(games, 'TB', i)
-        message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
-        
-    message = await message.edit_text(message.text+'\n✅')
 
-@dp.message_handler(commands=['max_tm'])
-async def max_tm(msg: types.Message):
-    message = await msg.answer('Макс. серия TM:')
-    games = lambda: get_many_games('all')
-    message_text = message.text
-    for i in range(1, 6):
-        round_streak = await max_round_total_streak(games, 'TM', i)
-        message_text = message_text+f'\nРаунд {i} -> {round_streak}'
-        message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
-        
-    message = await message.edit_text(message_text+'\n✅')
-'''
+@dp.message_handler(commands=['set_streak_limit'])
+async def set_streak_limit(msg: types.Message):
+    print(msg.text)
+    splt = msg.text.split(' ')
+    val = splt[1] if len(splt) > 1 else ''
+
+    streak_limit = get_or_create_config('streak_limit', val)
+
+    await msg.answer(f'{streak_limit=}')
+
+
 
 @dp.message_handler(lambda message: message.text.startswith('/max_'))
 async def max_tm(msg: types.Message):
@@ -127,41 +116,6 @@ async def streak_tb(msg: types.Message):
             answer_text = answer_text+f'\nДлина серии {length} -> Кол-во {count}'
         answer_text = answer_text+'\n✅'
         message = await message.edit_text(answer_text)
-
-'''
-@dp.message_handler(lambda message: message.text.startswith('/streak_tb'))
-async def streak_tb(msg: types.Message):
-    print('strek_tb')
-    num = msg.text[-1]
-    if num.isdigit() and int(num) > 0 and int(num) < 6:
-        message = await msg.answer('Статистика по сериям TB:') 
-        games = lambda: get_many_games('all')
-
-        message = await message.edit_text(message.text+f'\nРаунд {num}:')
-
-        stats = await get_total_streak_count(games, 'TB', int(num))
-        for length, count in sorted(stats.items()):
-            message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
-            
-        message = await message.edit_text(message.text+'\n✅')
-
-@dp.message_handler(lambda message: message.text.startswith('/streak_tm'))
-async def messages_handler(msg: types.Message):
-    print('strek_tm')
-    
-    num = msg.text[-1]
-    if num.isdigit() and int(num) > 0 and int(num) < 6:
-        message = await msg.answer('Статистика по сериям TM:') 
-        games = lambda: get_many_games('all')
-        
-        message = await message.edit_text(message.text+f'\nРаунд {num}:')
-
-        stats = await get_total_streak_count(games, 'TM', int(num))
-        for length, count in sorted(stats.items()):
-            message = await message.edit_text(message.text+f'\nДлина серии {length} -> Кол-во {count}')
-
-        message = await message.edit_text(message.text+'\n✅')
-'''
 
 
 async def schedule_check_strategies():

@@ -3,7 +3,10 @@ import asyncio
 from logger import logger
 from named_tuples import Games
 from named_tuples import cur_round_total_streak, max_round_total_streak, get_max_streak, get_cur_streak
+from get_config import get_config
 
+
+config = get_config('variables')
 
 strategies = []
 
@@ -14,7 +17,7 @@ def strategy(func):
     return wrapper
 
 
-streak_limit = 2
+streak_limit = int(config['streak_limit']) if 'streak_limit' in config else 10
 
 @strategy
 async def strategytb(last_games, all_games, all_games_rev):

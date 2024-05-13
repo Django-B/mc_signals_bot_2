@@ -19,7 +19,7 @@ def strategy(func):
 
 def streak_limit(total):
     config = get_config('variables')
-    return int(config[total.lower() + 'streak_limit']) if 'streak_limit' in config else 2 # type: ignore
+    return int(config[total.lower() + '_streak_limit']) if total.lower() + '_streak_limit' in config else 2 # type: ignore
 
 
 @strategy

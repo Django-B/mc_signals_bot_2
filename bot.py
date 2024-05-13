@@ -27,7 +27,12 @@ dp = Dispatcher(bot)
 async def set_bot_commands(dp):
     await dp.bot.set_my_commands([
         types.BotCommand("start", "Запустить бота"),
-        types.BotCommand("set_streak_limit", "Изменить переменную streak_limit"),
+        types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
+        types.BotCommand("set_tbb_streak_limit", "Изменить переменную tbb_streak_limit"),
+        types.BotCommand("set_tbbb_streak_limit", "Изменить переменную tbbb_streak_limit"),
+        types.BotCommand("set_tm_streak_limit", "Изменить переменную tm_streak_limit"),
+        types.BotCommand("set_tmm_streak_limit", "Изменить переменную tmm_streak_limit"),
+        types.BotCommand("set_tmmm_streak_limit", "Изменить переменную tmmm_streak_limit"),
 
         types.BotCommand("max_tb", "Макс. серия TB"),
         types.BotCommand("max_tbb", "Макс. серия TBB"),
@@ -78,6 +83,7 @@ async def send_welcome(message: types.Message):
     await message.reply("Привет! Я бот, который отправляет сигналы для ставок Mortal Combat")
 
 
+'''
 @dp.message_handler(commands=['set_streak_limit'])
 async def set_streak_limit(msg: types.Message):
     print(msg.text)
@@ -87,7 +93,18 @@ async def set_streak_limit(msg: types.Message):
     str_limit = get_or_create_config('streak_limit', val)
 
     await msg.answer(f'{str_limit=}')
+'''
 
+@dp.message_handler(lambda message: message.text.startswith('/set_'))
+async def set_variable(msg: types.Message):
+    print(msg.text)
+    splt = msg.text.split(' ')
+    var = splt[0].split('_')[1]
+    val = splt[1] if len(splt) > 1 else ''
+
+    val_ = get_or_create_config(var, val)
+
+    await msg.answer(f'{val_=}')
 
 
 @dp.message_handler(lambda message: message.text.startswith('/max_'))

@@ -17,9 +17,9 @@ def strategy(func):
 
 
 
-def streak_limit():
+def streak_limit(total):
     config = get_config('variables')
-    return int(config['streak_limit']) if 'streak_limit' in config else 2 # type: ignore
+    return int(config[total.lower() + 'streak_limit']) if 'streak_limit' in config else 2 # type: ignore
 
 
 @strategy
@@ -43,10 +43,10 @@ async def strategytb(last_games, all_games, all_games_rev):
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= streak_limit():
+        if cur_streak.streak >= streak_limit(total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}')
 
-        elif cur_streak2.streak >= streak_limit() and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= streak_limit(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 
@@ -71,10 +71,10 @@ async def strategytbb(last_games, all_games, all_games_rev):
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= streak_limit():
+        if cur_streak.streak >= streak_limit(total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}')
 
-        elif cur_streak2.streak >= streak_limit() and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= streak_limit(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 
@@ -101,10 +101,10 @@ async def strategytbbb(last_games, all_games, all_games_rev):
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= streak_limit():
+        if cur_streak.streak >= streak_limit(total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}') # type: ignore
 
-        elif cur_streak2.streak >= streak_limit() and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= streak_limit(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 
@@ -129,10 +129,10 @@ async def strategytm(last_games, all_games, all_games_rev):
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= streak_limit():
+        if cur_streak.streak >= streak_limit(total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}')
 
-        elif cur_streak2.streak >= streak_limit() and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= streak_limit(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 
@@ -157,10 +157,10 @@ async def strategytmm(last_games, all_games, all_games_rev):
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= streak_limit():
+        if cur_streak.streak >= streak_limit(total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}')
 
-        elif cur_streak2.streak >= streak_limit() and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= streak_limit(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 
@@ -186,10 +186,10 @@ async def strategytmmm(last_games, all_games, all_games_rev):
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= streak_limit():
+        if cur_streak.streak >= streak_limit(total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}')
 
-        elif cur_streak2.streak >= streak_limit() and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= streak_limit(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 

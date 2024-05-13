@@ -11,16 +11,17 @@ from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
+from my_strategies import streak_limit
 
 from get_config import get_config, get_or_create_config
 
 config = get_config()
 
 API_TOKEN = config['bot_token']
-CHECK_INTERVAL = float(config['check_interval'])*60
+CHECK_INTERVAL = float(config['check_interval'])*60 # type: ignore
 BOT_OWNERS = config['bot_owners'].split()
 
-bot = Bot(token=API_TOKEN)
+bot = Bot(token=API_TOKEN) # type: ignore
 dp = Dispatcher(bot)
 
 async def set_bot_commands(dp):
@@ -83,9 +84,9 @@ async def set_streak_limit(msg: types.Message):
     splt = msg.text.split(' ')
     val = splt[1] if len(splt) > 1 else ''
 
-    streak_limit = get_or_create_config('streak_limit', val)
+    str_limit = get_or_create_config('streak_limit', val)
 
-    await msg.answer(f'{streak_limit=}')
+    await msg.answer(f'{str_limit=}')
 
 
 

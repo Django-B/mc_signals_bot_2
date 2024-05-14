@@ -43,8 +43,8 @@ async def set_bot_commands(dp):
         types.BotCommand("max_tm", "Maкс. серия ТМ"),
 
         types.BotCommand("streak_tb1", "Статистика ТБ 1 раунд"),
-        types.BotCommand("streak_tbb1", "Статистика ТБ 1 раунд"),
-        types.BotCommand("streak_tbbb1", "Статистика ТБ 1 раунд"),
+        types.BotCommand("streak_tbb1", "Статистика ТББ 1 раунд"),
+        types.BotCommand("streak_tbbb1", "Статистика ТБББ 1 раунд"),
         types.BotCommand("streak_tm1", "Статистика ТМ 1 раунд"),
         types.BotCommand("streak_tmm1", "Статистика ТММ 1 раунд"),
         types.BotCommand("streak_tmmm1", "Статистика ТМММ 1 раунд"),

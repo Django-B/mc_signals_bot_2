@@ -15,9 +15,7 @@ def get_config(section='main'):
 def get_or_create_config(var, val=None, section='variables'):
     config = configparser.ConfigParser()
     config.read(config_filename)
-
-    if not section:
-        return
+    print('################################', config[section][var])
 
     if not section in config:
         config[section] = {}
@@ -27,10 +25,13 @@ def get_or_create_config(var, val=None, section='variables'):
         with open(config_filename, 'w') as f:
             config.write(f)
         
-    try:
+    if var in config[section]:
+        print('VAR IN SECTION')
+        print('VAR:', config[section][var])
         return config[section][var]
-    except:
-        return
+    else:
+        print('VAR NOT IN SECTION')
+
 
 
 if __name__=='__main__':

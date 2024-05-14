@@ -104,7 +104,7 @@ async def set_variable(msg: types.Message):
 
     val_ = get_or_create_config(var, val)
 
-    await msg.answer(f'{val_=}')
+    await msg.answer(f'{var}={val}')
 
 
 @dp.message_handler(lambda message: message.text.startswith('/max_'))

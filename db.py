@@ -113,6 +113,36 @@ async def get_some_games(count: int) -> Games:
         games = await cursor.fetchall()
 
         return games
+
+async def get_some_filter_games(count: int, field: str, value: str) -> Games:
+    '''Получить немного игр, желательно до 1000'''
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.cursor()
+
+        # Получение сообщений из таблицы
+        query1 = '''
+        SELECT * FROM {}
+        WhERE {} = '{}'
+        ORDER BY id DESC
+        LIMIT {};
+        '''
+        query2 = '''
+        SELECT * FROM {}
+        WhERE {} = '{}'
+        LIMIT {};
+        '''
+        if count<0:
+            query = query1.format(GAME_TABLE_NAME, field, value, -count)
+        elif count>0:
+            query = query2.format(GAME_TABLE_NAME, field, value, count)
+        else:
+            query = query1.format(GAME_TABLE_NAME, field, value, 1)
+        await cursor.execute(query)
+        games = await cursor.fetchall()
+
+        return games
+
 async def get_many_games(count: int|str='all',batch_size: int=50):
     '''Получить много игр, больше 1000, возвращает генератор списками по 1000 игр'''
     async with aiosqlite.connect(DB_NAME, timeout=30) as db:

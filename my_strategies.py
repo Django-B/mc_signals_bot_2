@@ -227,7 +227,7 @@ async def strategy_players_tb(last_games, all_games, all_games_rev):
 async def strategy_players_tm(last_games, all_games, all_games_rev):
     res = []
     for total in ('TM', 'TB'):
-        all_total = match_games(last_games[0], round_num=1)
+        all_total = await match_games(last_games[0], round_num=1)
         last_game_id = last_games[0]['id']
         if all_total:
             if all_total == total:

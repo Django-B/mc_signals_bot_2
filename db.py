@@ -1,6 +1,4 @@
 import aiosqlite, asyncio
-import datetime
-import time
 from logger import logger
 from get_config import get_config
 
@@ -10,12 +8,19 @@ config = get_config()
 
 DB_NAME = config['db_name']
 # CHANNEL_NAME = config['target_channel_url'].split('/')[-1]
-GAME_TABLE_NAME = 'game'
 USERS_TABLE_NAME = 'bot_user'
+GAME_TABLE_NAME = 'game'
+
+async def fetch(query):
+    async with aiosqlite.connect(DB_NAME, timeout=30) as db:
+        db.row_factory = aiosqlite.Row
+        cursor = await db.cursor()
+        await cursor.execute(query)
+        games = await cursor.fetchall()
+        return games
 
 
 async def create_tables():
-    # with open(DB_NAME, 'w'): pass
     async with aiosqlite.connect(DB_NAME, timeout=30) as db:
         cursor = await db.cursor()
 

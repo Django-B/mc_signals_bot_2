@@ -27,6 +27,9 @@ dp = Dispatcher(bot)
 async def set_bot_commands(dp):
     await dp.bot.set_my_commands([
         types.BotCommand("start", "Запустить бота"),
+
+        types.BotCommand("ochka", "5 тб и 5 тб у обоих персонажей перед их очкой"),
+
         types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
         types.BotCommand("set_tbb_streak_limit", "Изменить переменную tbb_streak_limit"),
         types.BotCommand("set_tbbb_streak_limit", "Изменить переменную tbbb_streak_limit"),
@@ -94,6 +97,11 @@ async def set_streak_limit(msg: types.Message):
 
     await msg.answer(f'{str_limit=}')
 '''
+
+@dp.message_handler(commands=['ochka'])
+async def ochka(msg: types.Message):
+    await msg.answer('Здесь должна быть статистика по очкам')
+
 
 @dp.message_handler(lambda message: message.text.startswith('/set_'))
 async def set_variable(msg: types.Message):

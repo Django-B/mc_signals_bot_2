@@ -4,6 +4,7 @@ from logger import logger
 from named_tuples import Games
 from named_tuples import cur_round_total_streak, max_round_total_streak, get_max_streak, get_cur_streak, is_equal_totals
 from get_config import get_config
+from analytics import match_games
 
 from db import get_some_filter_games
 
@@ -201,6 +202,7 @@ async def strategytmmm(last_games, all_games, all_games_rev):
 
 
 
+'''
 @strategy
 async def strategy_players_tb(last_games, all_games, all_games_rev):
     total = 'TB'
@@ -219,26 +221,30 @@ async def strategy_players_tb(last_games, all_games, all_games_rev):
     if is_true:
         last_game_id = last_game['game_id']
         return f'Сигнал на очку {p1} и {p2}, тотал {total}\nhttps://t.me/statamk10/{last_game_id}'
+'''
 
 @strategy
 async def strategy_players_tm(last_games, all_games, all_games_rev):
-    total = 'TM'
+    res = []
+    for total in ('TM', 'TB'):
+        all_total = match_games(last_games[0], round_num=1)
+        last_game_id = last_games[0]['id']
+        if all_total:
+            if all_total == total:
+                res.append(f'Двойная серия {all_total}\nhttps://t.me/statamk10/{last_game_id}')
+    return res
 
+
+
+
+'''
+@strategy
+async def strategy_ochka(last_games, all_games, all_games_rev):
     last_game = last_games[0]
     p1 = last_game['p1_name']
     p2 = last_game['p2_name']
-
-    p1_games = (await get_some_filter_games(-6, 'p1_name', p1))\
-            [1:]
-    p2_games = (await get_some_filter_games(-6, 'p2_name', p2))\
-            [1:]
-
-    p1_p2_games = p1_games+p2_games
-    is_true = all([(await is_equal_totals(total, x['round1_total'])) for x in p1_p2_games])
-    if is_true:
-        last_game_id = last_game['game_id']
-        return f'Сигнал на очку {p1} и {p2}, тотал {total}\nhttps://t.me/statamk10/{last_game_id}'
-
+    
+'''
 
 
 
@@ -607,8 +613,21 @@ async def test():
     print('test')
     games = db.get_many_games('all')
     from named_tuples import get_total_streak_count
-    a = await get_total_streak_count(lambda: games, 'TB', 1)
+    a = await ochka_stat(games)
     print(a)
+
+    data = {}
+    for players, totals in a.items():
+        for total, subtotals in totals.items():
+            if total not in data.keys():
+                data[total] = {}
+            for subtotal, value in subtotals.items():
+                if not subtotal in data[total].keys():
+                    data[total][subtotal] = 0
+                data[total][subtotal] += value
+    print('######################################################')
+    print(data)
+
 
 if __name__=='__main__':
     loop = asyncio.get_event_loop()

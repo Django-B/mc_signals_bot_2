@@ -36,6 +36,12 @@ async def is_equal_totals(need_total, cur_total):
         need_total == 'TMMM' and cur_total in ('TM', 'TB', 'TMM'),
     ]):
         return True
+'''
+async def ochka_stat(all_games):
+    async def _get_5prev_games(p_name):
+
+    async for game in all_games():
+'''
 
 async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     max_length = 0

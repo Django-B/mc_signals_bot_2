@@ -17,7 +17,13 @@ async def _get_total(games, round_num):
     totals = [x[f'round{round_num}_total'] for x in games]
     
     target_totals = ['TB', 'TM']
-    tb_res = [ all([ await is_equal_totals(target_total, x) for x in totals ]) for target_total in target_totals]
+    # tb_res = [ all([ await is_equal_totals(target_total, x) for x in totals ]) for target_total in target_totals]
+    tb_res = []
+    for target_total in target_totals:
+        inner_list = []
+        for x in totals:
+            inner_list.append(await is_equal_totals(target_total, x))
+        tb_res.append(all(inner_list))
     print(f'{tb_res=}')
     if True in tb_res:
         return target_totals[tb_res.index(True)]

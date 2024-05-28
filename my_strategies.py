@@ -4,7 +4,7 @@ from logger import logger
 from named_tuples import Games
 from named_tuples import cur_round_total_streak, max_round_total_streak, get_max_streak, get_cur_streak, is_equal_totals
 from get_config import get_config
-from analytics import match_games
+from analytics import match_games, ochka_stat, max_f_streak, cur_f_streak
 
 from db import get_some_filter_games
 
@@ -19,7 +19,6 @@ def strategy(func):
     return wrapper
 
 
-
 def streak_limit(total):
     config = get_config('variables')
     if total:
@@ -27,6 +26,23 @@ def streak_limit(total):
         return int(config[total]) if total in config else 2
         
     return int(config[total.lower() + '_streak_limit']) if total.lower() + '_streak_limit' in config else 2 # type: ignore
+
+@strategy
+async def strategyf(last_games, all_games, all_games_rev):
+    '''Фаталити'''
+
+    signals = []
+
+    for round_num in range(1,6):
+        cur_streak = await cur_f_streak(all_games_rev)
+        cur_streak_cut = await cur_f_streak(all_games_rev, cut=True)
+
+        if cur_streak >= 10:
+
+            signals.append(f'Серия Fаталити в {round_num}-м раунде достигла {cur_streak}')
+
+        return signals
+
 
 
 @strategy
@@ -613,9 +629,7 @@ async def test():
     print('test')
     games = db.get_many_games('all')
     from named_tuples import get_total_streak_count
-    a = await ochka_stat(games)
-    print(a)
-
+    a = await ochka_stat(games, 5)
     data = {}
     for players, totals in a.items():
         for total, subtotals in totals.items():

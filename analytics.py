@@ -2,6 +2,51 @@ from db import fetch, GAME_TABLE_NAME
 from named_tuples import is_equal_totals
 
 
+async def max_f_streak(all_games):
+    max_length = 0
+    current_length = 0
+    b = []
+    async for game in games():
+        finish = game[f'round{round_num}_finish']
+        if finish:
+            if finish=='F':
+                current_length += 1
+                # b.append(game[f'round{round_num}_total'])
+            else:
+                max_length = max(max_length, current_length)
+                # if current_length>1:
+                    # print(b, current_length)
+                    # b = []
+                current_length = 0
+    max_length = max(max_length, current_length)  # Обработка случая, когда серия заканчивается в конце списка
+    return max_length
+
+async def cur_f_streak(games_reversed, round_num: int = 1, cut: bool = False):
+    '''Возвращает длину последней серии тоталов(TB, TM) в нужном раунде последних игр'''
+    finish_key_name = f'round{round_num}_finish'
+    cur_total = None
+    streak = 0
+    flag = False
+    if finish:
+        cur_total = finish
+        flag = True
+    for game in games_reversed:
+        finish = game[finish_key_name]
+        if finish:
+            if not cut:
+                if not flag:
+                    cur_total = finish
+                    flag = True
+                    streak += 1
+                elif flag:
+                    if finish=='F':
+                        streak += 1
+                    else: 
+                        break
+            else:
+                cut = False
+    return streak
+
 async def _get_5prev_games(id_, p_name):
     '''Возвращает 5 последних игр конкретного персонажа'''
     query = f"SELECT * FROM {GAME_TABLE_NAME}\
@@ -24,7 +69,6 @@ async def _get_total(games, round_num):
         for x in totals:
             inner_list.append(await is_equal_totals(target_total, x))
         tb_res.append(all(inner_list))
-    print(f'{tb_res=}')
     if True in tb_res:
         return target_totals[tb_res.index(True)]
     else:

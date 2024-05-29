@@ -27,11 +27,12 @@ async def cur_f_streak(games_reversed, round_num: int = 1, cut: bool = False):
     cur_total = None
     streak = 0
     flag = False
-    if finish:
-        cur_total = finish
-        flag = True
     for game in games_reversed:
-        finish = game[finish_key_name]
+        finish = game[f'round{round_num}_finish']
+        if finish:
+            cur_total = finish
+            flag = True
+            finish = game[finish_key_name]
         if finish:
             if not cut:
                 if not flag:

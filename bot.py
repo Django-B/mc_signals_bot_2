@@ -11,7 +11,6 @@ from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
-from my_strategies import streak_limit
 
 from get_config import get_config, get_or_create_config
 
@@ -30,6 +29,7 @@ async def set_bot_commands(dp):
 
         types.BotCommand("ochka", "5 тб и 5 тб у обоих персонажей перед их очкой"),
 
+        types.BotCommand("set_f_limit", "Изменить мин. серию Fаталити"),
         types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
         types.BotCommand("set_tbb_streak_limit", "Изменить переменную tbb_streak_limit"),
         types.BotCommand("set_tbbb_streak_limit", "Изменить переменную tbbb_streak_limit"),

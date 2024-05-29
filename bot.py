@@ -11,6 +11,7 @@ from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
+from analytics import max_f_streak
 
 from get_config import get_config, get_or_create_config
 
@@ -29,7 +30,9 @@ async def set_bot_commands(dp):
 
         types.BotCommand("ochka", "5 тб и 5 тб у обоих персонажей перед их очкой"),
 
+        types.BotCommand("max_f", "Макс. серия фаталити"),
         types.BotCommand("set_f_limit", "Изменить мин. серию Fаталити"),
+
         types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
         types.BotCommand("set_tbb_streak_limit", "Изменить переменную tbb_streak_limit"),
         types.BotCommand("set_tbbb_streak_limit", "Изменить переменную tbbb_streak_limit"),
@@ -106,7 +109,7 @@ async def ochka(msg: types.Message):
 @dp.message_handler(lambda message: message.text.startswith('/set_'))
 async def set_variable(msg: types.Message):
     print(msg.text)
-    splt = msg.text.split(' ')
+    splt = msg.text.split(' ', 1)
     var = splt[0].split('_')[1]
     val = splt[1] if len(splt) > 1 else ''
 
@@ -115,7 +118,21 @@ async def set_variable(msg: types.Message):
     await msg.answer(f'{var}={val_}')
 
 
-@dp.message_handler(lambda message: message.text.startswith('/max_'))
+@dp.message_handler(commands=['max_f'])
+async def max_f(msg: types.Message):
+    message = await msg.answer('Макс. серия фаталити:')
+    message_text=message.text
+    print('get games')
+    games = lambda: get_many_games('all')
+    for i in range(1, 6):
+        print('count streak', i)
+        streak = await max_f_streak(games, i)
+        message_text = message_text+f'\nРаунд {i} -> {streak}'
+        message = await message.edit_text(message.text+f'\nРаунд {i} -> {streak}')
+    message = await message.edit_text(message_text+'\n✅')
+
+
+@dp.message_handler(lambda message: message.text.startswith('/max_T'))
 async def max_tm(msg: types.Message):
     total_name = msg.text.split('_')[-1].upper()
     message = await msg.answer(f'Макс. серия {total_name}:')

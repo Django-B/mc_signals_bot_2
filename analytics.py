@@ -2,7 +2,7 @@ from db import fetch, GAME_TABLE_NAME
 from named_tuples import is_equal_totals
 
 
-async def max_f_streak(all_games):
+async def max_f_streak(games, round_num):
     max_length = 0
     current_length = 0
     b = []

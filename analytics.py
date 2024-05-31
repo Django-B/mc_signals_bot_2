@@ -49,13 +49,13 @@ async def get_cur_streak(last_games, key, is_equal_func=lambda x: x, cut=False):
     return streak
 
 
-async def get_max_streak(all_games, key, need_value, is_equal_func):
+async def get_max_streak(all_games, key, is_equal_func):
     max_length = 0
     current_length = 0
     async for game in all_games():
         val = game[key]
         if val:
-            if is_equal_func(val, need_value):
+            if is_equal_func(val):
                 current_length += 1
             else:
                 max_length = max(max_length, current_length)

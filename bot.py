@@ -11,7 +11,7 @@ from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
-from analytics import max_f_streak, get_streak_count
+from analytics import max_f_streak, get_streak_count, get_max_streak
 
 from get_config import get_config, get_or_create_config
 
@@ -30,7 +30,8 @@ async def set_bot_commands(dp):
 
         types.BotCommand("ochka", "5 тб и 5 тб у обоих персонажей перед их очкой"),
 
-        types.BotCommand("max_f", "Макс. серия фаталити"),
+        types.BotCommand("max_f", "Макс. серия Фаталити"),
+        types.BotCommand("max_nof", "Макс. серия НеФаталити"),
         types.BotCommand("set_f_limit", "Изменить мин. серию Fаталити"),
 
         types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
@@ -137,6 +138,18 @@ async def streak_nof(msg: types.Message):
             answer_text = answer_text+f'\nДлина серии {length} -> Кол-во {count}'
         answer_text = answer_text+'\n✅'
         message = await message.edit_text(answer_text)
+
+
+@dp.message_handler(commands=['max_nof'])
+async def max_nof(msg: types.Message):
+    message = await msg.answer('Макс. серия НеФаталити:')
+    message_text=message.text
+    games = lambda: get_many_games('all')
+    for i in range(1, 6):
+        streak = await get_max_streak(games,f'round{i}_finish', lambda x: x!='F')
+        message_text = message_text+f'\nРаунд {i} -> {streak}'
+        message = await message.edit_text(message.text+f'\nРаунд {i} -> {streak}')
+    message = await message.edit_text(message_text+'\n✅')
 
 
 @dp.message_handler(commands=['max_f'])

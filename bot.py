@@ -11,7 +11,7 @@ from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
-from analytics import max_f_streak
+from analytics import max_f_streak, get_streak_count
 
 from get_config import get_config, get_or_create_config
 
@@ -47,6 +47,12 @@ async def set_bot_commands(dp):
         types.BotCommand("max_tmm", "Maкс. серия ТММ"),
         types.BotCommand("max_tmmm", "Maкс. серия ТМММ"),
         types.BotCommand("max_tm", "Maкс. серия ТМ"),
+
+        types.BotCommand("streak_nof1", "Статистика НеФатаилити 1 раунд"),
+        types.BotCommand("streak_nof2", "Статистика НеФатаилити 2 раунд"),
+        types.BotCommand("streak_nof3", "Статистика НеФатаилити 3 раунд"),
+        types.BotCommand("streak_nof4", "Статистика НеФатаилити 4 раунд"),
+        types.BotCommand("streak_nof5", "Статистика НеФатаилити 5 раунд"),
 
         types.BotCommand("streak_tb1", "Статистика ТБ 1 раунд"),
         types.BotCommand("streak_tbb1", "Статистика ТББ 1 раунд"),
@@ -117,6 +123,21 @@ async def set_variable(msg: types.Message):
 
     await msg.answer(f'{var}={val_}')
 
+@dp.message_handler(lambda message: message.text.startswith('/streak_nof'))
+async def streak_nof(msg: types.Message):
+    round_num = msg.text[-1]
+    key = f'round{round_num}_finish'
+    if round_num.isdigit() and int(round_num) > 0 and int(round_num) < 6:
+        message = await msg.answer(f'Статистика по сериям НеФаталити раунд {round_num}:') 
+        games = lambda: get_many_games('all')
+
+        stats = await get_streak_count(games, key, lambda y: y!='F' )
+        answer_text = message.text
+        for length, count in sorted(stats.items()):
+            answer_text = answer_text+f'\nДлина серии {length} -> Кол-во {count}'
+        answer_text = answer_text+'\n✅'
+        message = await message.edit_text(answer_text)
+
 
 @dp.message_handler(commands=['max_f'])
 async def max_f(msg: types.Message):
@@ -127,6 +148,7 @@ async def max_f(msg: types.Message):
     for i in range(1, 6):
         print('count streak', i)
         streak = await max_f_streak(games, i)
+        print(streak)
         message_text = message_text+f'\nРаунд {i} -> {streak}'
         message = await message.edit_text(message.text+f'\nРаунд {i} -> {streak}')
     message = await message.edit_text(message_text+'\n✅')

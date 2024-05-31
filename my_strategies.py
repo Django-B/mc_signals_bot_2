@@ -1,10 +1,13 @@
 import asyncio
 
+
 from logger import logger
 from named_tuples import Games
 from named_tuples import cur_round_total_streak, max_round_total_streak, get_max_streak, get_cur_streak, is_equal_totals
 from get_config import get_config
-from analytics import match_games, ochka_stat, max_f_streak, cur_f_streak
+from analytics import match_games, ochka_stat, \
+    max_f_streak, cur_f_streak,\
+    get_cur_streak, get_max_streak
 
 from db import get_some_filter_games
 
@@ -26,6 +29,30 @@ def get_env_variables(total):
         return int(config[total]) if total in config else 1
         
     return int(config[total.lower() + '_streak_limit']) if total.lower() + '_streak_limit' in config else 2 # type: ignore
+
+@strategy
+async def strategynof(last_games, all_games, all_games_rev):
+    '''Не фаталити'''
+    signals = []
+
+    for round_num in range(1,6):
+        key = f'round{round_num}_finish'
+        last_game = ''
+        for game in last_games:
+            if game[key] and game[key] != 'F':
+                last_game = game['game_id']
+                break
+        cur_streak = await get_cur_streak(last_games,key,lambda x: x!='F')
+        cur_streak_cut = await  get_cur_streak(last_games,key,lambda x: x!='F', cut=True)
+
+        if cur_streak >= get_env_variables('f_limit'):
+            signals.append(f'Серия Fаталити в {round_num}-м раунде достигла {cur_streak}')
+        elif cur_streak_cut >= get_env_variables('f_limit') and cur_streak == 1:
+            signals.append(f'Серия Fаталити в {round_num}-м раунде достигла {cur_streak}✅\nhttps://t.me/statamk9/{last_game}')
+
+        return signals
+
+
 
 @strategy
 async def strategyf(last_games, all_games, all_games_rev):
@@ -245,6 +272,7 @@ async def strategy_players_tb(last_games, all_games, all_games_rev):
         return f'Сигнал на очку {p1} и {p2}, тотал {total}\nhttps://t.me/statamk10/{last_game_id}'
 '''
 
+'''
 @strategy
 async def strategy_players_tm(last_games, all_games, all_games_rev):
     res = []
@@ -255,6 +283,7 @@ async def strategy_players_tm(last_games, all_games, all_games_rev):
             if all_total == total:
                 res.append(f'Двойная серия {all_total}\nhttps://t.me/statamk10/{last_game_id}')
     return res
+'''
 
 
 

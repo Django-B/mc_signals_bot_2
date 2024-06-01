@@ -33,6 +33,7 @@ async def set_bot_commands(dp):
         types.BotCommand("max_f", "Макс. серия Фаталити"),
         types.BotCommand("max_nof", "Макс. серия НеФаталити"),
         types.BotCommand("set_f_limit", "Изменить мин. серию Fаталити"),
+        types.BotCommand("set_nof_limit", "Изменить мин. серию Fаталити"),
 
         types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
         types.BotCommand("set_tbb_streak_limit", "Изменить переменную tbb_streak_limit"),

@@ -45,9 +45,9 @@ async def strategynof(last_games, all_games, all_games_rev):
         cur_streak = await get_cur_streak(last_games,key,lambda x: x!='F')
         cur_streak_cut = await  get_cur_streak(last_games,key,lambda x: x!='F', cut=True)
 
-        if cur_streak >= get_env_variables('f_limit'):
+        if cur_streak >= get_env_variables('nof_limit'):
             signals.append(f'Серия Fаталити в {round_num}-м раунде достигла {cur_streak}')
-        elif cur_streak_cut >= get_env_variables('f_limit') and cur_streak == 1:
+        elif cur_streak_cut >= get_env_variables('nof_limit') and cur_streak == 1:
             signals.append(f'Серия Fаталити в {round_num}-м раунде достигла {cur_streak}✅\nhttps://t.me/statamk9/{last_game}')
 
         return signals

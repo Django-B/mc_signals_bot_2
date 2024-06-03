@@ -2,7 +2,7 @@ from telethon.tl.types import InputPeerChannel
 import asyncio 
 import re
 
-from db import get_some_games, delete_last_messages, insert_message, init_db
+from db import get_some_games, delete_last_messages, insert_message, insert_games
 from get_config import get_config
 from telethon_client import user_client
 
@@ -34,6 +34,7 @@ async def dump_channel_history(channel_url=TARGET_CHANNEL_URL, delete_count=10):
 
     offset_id = 0
     games = list(await get_some_games(delete_count+5)) # берем с запасом на всякий случай
+    cur_games = []
 
     if games:
         offset_id = await delete_last_messages(delete_count)
@@ -53,7 +54,11 @@ async def dump_channel_history(channel_url=TARGET_CHANNEL_URL, delete_count=10):
         if not game:
             continue
 
-        await insert_message(game=game)
+        # await insert_message(game=game)
+        cur_games.append(game)
+        if len(cur_games) >= 100:
+            await insert_games(cur_games)
+            cur_games = []
         message_preview = message.text[:message.text.find('\n')]+'...' if message.text else '[Текст отсутствует]'
         logger.info('Сохранение поста с ID {} | {} '.format(message.id, message_preview))
 

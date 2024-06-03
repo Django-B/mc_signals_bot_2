@@ -1,5 +1,30 @@
+import asyncio
+from pprint import pprint
+
 from db import fetch, GAME_TABLE_NAME
 from named_tuples import is_equal_totals
+
+
+async def get_interrupt_stat(all_games, total, round_num):
+    max_length = 0
+    current_length = 0
+    data = {}
+    async for game in all_games():
+        cur_total = game[f'round{round_num}_total']
+        if cur_total:
+            if await is_equal_totals(total, cur_total):
+                current_length += 1
+            else:
+                if current_length >= 2:
+                    if not current_length in data:
+                        for key in data.keys():
+                            data[key]+=1
+                        data[current_length] = 1
+                            
+                    
+                max_length = max(max_length, current_length)
+                current_length = 0
+    return data
 
 async def get_streak_count(games, key, is_equal_func, min_count=10):
     '''
@@ -165,6 +190,9 @@ async def ochka_stat(all_games, round_num=1):
     return data
 
 
-        
-        
+async def main():
+    from db import get_many_games
+    await get_interrupt_stat(get_many_games)
 
+if __name__ == "__main__":
+    asyncio.run(main())

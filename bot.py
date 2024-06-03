@@ -11,7 +11,8 @@ from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
 from named_tuples import max_round_total_streak, get_total_streak_count
-from analytics import max_f_streak, get_streak_count, get_max_streak
+from analytics import max_f_streak, get_streak_count, get_max_streak,\
+                      get_interrupt_stat
 
 from get_config import get_config, get_or_create_config
 
@@ -30,11 +31,8 @@ async def set_bot_commands(dp):
 
         types.BotCommand("ochka", "5 тб и 5 тб у обоих персонажей перед их очкой"),
 
-        types.BotCommand("max_f", "Макс. серия Фаталити"),
-        types.BotCommand("max_nof", "Макс. серия НеФаталити"),
         types.BotCommand("set_f_limit", "Изменить мин. серию Fаталити"),
         types.BotCommand("set_nof_limit", "Изменить мин. серию НеFаталити"),
-
         types.BotCommand("set_tb_streak_limit", "Изменить переменную tb_streak_limit"),
         types.BotCommand("set_tbb_streak_limit", "Изменить переменную tbb_streak_limit"),
         types.BotCommand("set_tbbb_streak_limit", "Изменить переменную tbbb_streak_limit"),
@@ -42,6 +40,15 @@ async def set_bot_commands(dp):
         types.BotCommand("set_tmm_streak_limit", "Изменить переменную tmm_streak_limit"),
         types.BotCommand("set_tmmm_streak_limit", "Изменить переменную tmmm_streak_limit"),
 
+        types.BotCommand("interrupt_stat_tb", "Статистика по перебивкам TB"),
+        types.BotCommand("interrupt_stat_tbb", "Статистика по перебивкам TBB"),
+        types.BotCommand("interrupt_stat_tbbb", "Статистика по перебивкам TBBB"),
+        types.BotCommand("interrupt_stat_tm", "Статистика по перебивкам TM"),
+        types.BotCommand("interrupt_stat_tmm", "Статистика по перебивкам TMM"),
+        types.BotCommand("interrupt_stat_tmmmm", "Статистика по перебивкам TMMM"),
+
+        types.BotCommand("max_f", "Макс. серия Фаталити"),
+        types.BotCommand("max_nof", "Макс. серия НеФаталити"),
         types.BotCommand("max_tb", "Макс. серия TB"),
         types.BotCommand("max_tbb", "Макс. серия TBB"),
         types.BotCommand("max_tbbb", "Макс. серия TBBB"),
@@ -168,7 +175,7 @@ async def max_f(msg: types.Message):
     message = await message.edit_text(message_text+'\n✅')
 
 
-@dp.message_handler(lambda message: message.text.startswith('/max_T'))
+@dp.message_handler(lambda message: message.text.startswith('/max_t'))
 async def max_tm(msg: types.Message):
     total_name = msg.text.split('_')[-1].upper()
     message = await msg.answer(f'Макс. серия {total_name}:')
@@ -180,6 +187,23 @@ async def max_tm(msg: types.Message):
         message = await message.edit_text(message.text+f'\nРаунд {i} -> {round_streak}')
         
     message = await message.edit_text(message_text+'\n✅')
+
+
+@dp.message_handler(lambda message: message.text.startswith('/interrupt_stat_'))
+async def interrupt_stat(msg: types.Message):
+    total = msg.text.split('_')[-1].upper()
+    
+    message = await msg.answer(f'Ствтистика {total} по перебивкам:')
+    
+    all_games = get_many_games
+    for round_num in range(1, 6):
+        stat = await get_interrupt_stat(all_games, total, round_num)
+        stat_text = '\n'.join([f'{key} -> {val}' for key, val in stat.items()])
+        message = await message.edit_text(message.text+'\n'+f'Раунд {round_num}:\n'+stat_text)
+    await message.edit_text(message.text+'\n'+'✅')
+
+    
+
 
 @dp.message_handler(lambda message: message.text.startswith('/streak_'))
 async def streak_tb(msg: types.Message):

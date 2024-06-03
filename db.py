@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Iterable
 
 from get_config import get_config
-from named_tuples import Game, Games
+from named_tuples import Game
 from decorators import *
 
 config = get_config()
@@ -20,7 +20,6 @@ GAME_TABLE_NAME = 'game'
 class QueryType(Enum):
     COMMIT = 'commit'
     FETCH = 'fetch'
-    FETCHMANY = 'fetchmany'
 
 @retry_on_locked_database()
 async def execute(query: str, query_type: QueryType) -> Iterable[aiosqlite.Row] | AsyncGenerator[aiosqlite.Row] |  None:
@@ -77,6 +76,16 @@ async def insert_message(game: Game):
     )
     await commit(query)
 
+async def insert_games(games: list[Game]):
+    '''Cоздает записи результатов игр в БД'''
+    fields = ','.join(Game._fields)
+    values = ',\n'.join([ '('+', '.join(map(lambda x: f"'{x}'", game._asdict().values())) + ')' for game in games ])
+ 
+    query = f'''
+        INSERT OR IGNORE INTO {GAME_TABLE_NAME} ( {fields} )
+        VALUES {values}
+    '''
+    await commit(query)
 
 async def insert_user(user_id, username):
     '''Создание записи пользователя в БД'''
@@ -91,17 +100,24 @@ async def delete_game_by_game_id(game_id: int):
     '''Удаляет сообщение по id игры'''
     query = f"DELETE FROM {GAME_TABLE_NAME} WHERE game_id = '{game_id}'"
     await commit(query)
+    
+
+async def delete_games_by_game_ids(game_ids: list[int]):
+    query = f"DELETE FROM {GAME_TABLE_NAME} WHERE game_id IN ({', '.join(map(str, game_ids))})"
+    await commit(query)
 
 
 async def delete_last_messages(delete_games_count=5) -> int:
     if delete_games_count != 0:
         last_games = await get_some_games(-delete_games_count)
-        for game in last_games:
-            await delete_game_by_game_id(game['game_id'])
-            game_id = game['game_id']
-            logger.info(f'Удален пост: {game_id}')
+        games_ids = [game['game_id'] for game in last_games]
+        await delete_games_by_game_ids(games_ids)
+        # for game in last_games:
+        #     await delete_game_by_game_id(game['game_id'])
+        #     game_id = game['game_id']
+        #     logger.info(f'Удален пост: {game_id}')
     last_game = await get_some_games(-1)
-    return last_game[0]['game_id'] if last_game else 0
+    return last_game[0]['game_id'] if last_game else 0 # type: ignore
 
 
 async def get_some_games(count: int) -> Iterable[aiosqlite.Row]:

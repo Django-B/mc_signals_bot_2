@@ -52,6 +52,9 @@ async def dump_channel_history(channel_url=TARGET_CHANNEL_URL, delete_count=10):
         # game = await get_game_results(message.id, message.text)
         game = await ext.extract_game_data(message)
         if not game:
+            if cur_games:
+                await insert_games(cur_games)
+                cur_games = []
             continue
 
         # await insert_message(game=game)

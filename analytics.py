@@ -5,24 +5,23 @@ from db import fetch, GAME_TABLE_NAME
 from named_tuples import is_equal_totals
 
 
-async def get_interrupt_stat(all_games, total, round_num):
-    max_length = 0
+async def get_interrupt_stat(all_games, key, is_equal_func= lambda x: x):
+    old_length = 1
     current_length = 0
     data = {}
     async for game in all_games():
-        cur_total = game[f'round{round_num}_total']
+        cur_total = game[key]
         if cur_total:
-            if await is_equal_totals(total, cur_total):
+            if is_equal_func(cur_total):
                 current_length += 1
             else:
-                if current_length >= 2:
-                    if not current_length in data:
-                        for key in data.keys():
-                            data[key]+=1
-                        data[current_length] = 1
-                            
-                    
-                max_length = max(max_length, current_length)
+                if current_length > 0:
+                    if current_length > old_length:
+                        print(old_length, current_length)
+                        length = current_length - old_length
+                        data[length] = data[length] + 1 if length in data else 1
+
+                        old_length = current_length
                 current_length = 0
     return data
 
@@ -153,7 +152,7 @@ async def _get_total(games, round_num):
     for target_total in target_totals:
         inner_list = []
         for x in totals:
-            inner_list.append(await is_equal_totals(target_total, x))
+            inner_list.append( is_equal_totals(target_total, x))
         tb_res.append(all(inner_list))
     if True in tb_res:
         return target_totals[tb_res.index(True)]
@@ -192,7 +191,8 @@ async def ochka_stat(all_games, round_num=1):
 
 async def main():
     from db import get_many_games
-    await get_interrupt_stat(get_many_games)
+    res = await get_interrupt_stat(get_many_games, 'round1_total', lambda x: is_equal_totals('TB', x))
+    print(res)
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -10,7 +10,7 @@ from logger import logger
 from history import dump_channel_history
 from telethon_client import user_client
 from db import get_users, init_db, insert_user, delete_last_messages, get_many_games
-from named_tuples import max_round_total_streak, get_total_streak_count
+from named_tuples import is_equal_totals, max_round_total_streak, get_total_streak_count
 from analytics import max_f_streak, get_streak_count, get_max_streak,\
                       get_interrupt_stat
 
@@ -40,6 +40,7 @@ async def set_bot_commands(dp):
         types.BotCommand("set_tmm_streak_limit", "Изменить переменную tmm_streak_limit"),
         types.BotCommand("set_tmmm_streak_limit", "Изменить переменную tmmm_streak_limit"),
 
+        types.BotCommand("interrupt_stat_nof", "Статистика по перебивкам NoF"),
         types.BotCommand("interrupt_stat_tb", "Статистика по перебивкам TB"),
         types.BotCommand("interrupt_stat_tbb", "Статистика по перебивкам TBB"),
         types.BotCommand("interrupt_stat_tbbb", "Статистика по перебивкам TBBB"),
@@ -189,15 +190,21 @@ async def max_tm(msg: types.Message):
     message = await message.edit_text(message_text+'\n✅')
 
 
+
 @dp.message_handler(lambda message: message.text.startswith('/interrupt_stat_'))
 async def interrupt_stat(msg: types.Message):
     total = msg.text.split('_')[-1].upper()
+    key = 'round{}_total'
+    func = lambda x:  is_equal_totals(total, x)
+    if total == 'NOF':
+        key = 'round{}_finish'
+        func = lambda x: x != 'F'
     
     message = await msg.answer(f'Ствтистика {total} по перебивкам:')
     
     all_games = get_many_games
     for round_num in range(1, 6):
-        stat = await get_interrupt_stat(all_games, total, round_num)
+        stat = await get_interrupt_stat(all_games, key.format(round_num), func)
         stat_text = '\n'.join([f'{key} -> {val}' for key, val in stat.items()])
         message = await message.edit_text(message.text+'\n'+f'Раунд {round_num}:\n'+stat_text)
     await message.edit_text(message.text+'\n'+'✅')

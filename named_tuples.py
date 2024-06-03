@@ -24,7 +24,7 @@ class Strategies(UserList):
         pass
 
 
-async def is_equal_totals(need_total, cur_total):
+def is_equal_totals(need_total, cur_total):
     '''
         тбб=тб=тббб
         тмм=тм=тммм
@@ -46,7 +46,7 @@ async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     b = []
     async for game in games():
         if game[f'round{round_num}_total']:
-            if (await is_equal_totals(total_name, game[f'round{round_num}_total'])):
+            if (is_equal_totals(total_name, game[f'round{round_num}_total'])):
                 current_length += 1
                 # b.append(game[f'round{round_num}_total'])
             else:
@@ -65,7 +65,7 @@ async def max_round_total_streak(games, total_name: str, round_num: int = 1):
     async for game in games():
         game = game[f'round{round_num}_total']
         if game:
-            if (await is_equal_totals(total_name, game)):
+            if (is_equal_totals(total_name, game)):
                 current_seq += 1
                 if current_seq > max_seq:
                     max_seq = current_seq
@@ -92,7 +92,7 @@ async def cur_round_total_streak(games_reversed, round_num: int = 1, total: str 
                     flag = True
                     streak += 1
                 elif flag:
-                    if await is_equal_totals(cur_total, total):
+                    if is_equal_totals(cur_total, total):
                         streak += 1
                     else: 
                         break
@@ -146,7 +146,7 @@ async def get_total_streak_count(games, total, round_num, min_count=10):
     b = []
     async for game in games():
         if game[f'round{round_num}_total']:
-            if (await is_equal_totals(total, game[f'round{round_num}_total'])):
+            if (is_equal_totals(total, game[f'round{round_num}_total'])):
                 count += 1
                 b.append(game[f'round{round_num}_total'])
                 print(game[f'round{round_num}_total'], count)
@@ -177,7 +177,7 @@ async def get_total_streak_count(games, total, round_num, min_count=10):
     b = []
     async for game in games():
         if game[f'round{round_num}_total']:
-            if (await is_equal_totals(total, game[f'round{round_num}_total'])):
+            if ( is_equal_totals(total, game[f'round{round_num}_total'])):
                 count += 1
             else:
                 if count > min_count:

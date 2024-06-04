@@ -80,10 +80,8 @@ async def strategyf(last_games, all_games, all_games_rev):
 
 @strategy
 async def strategytb(last_games, all_games, all_games_rev):
-    '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     games = last_games
 
-    total = 'TB'
 
     signals = []
     for round_num in range(1, 6):
@@ -94,21 +92,21 @@ async def strategytb(last_games, all_games, all_games_rev):
                 break
 
         real_cur_streak = await cur_round_total_streak(games, round_num=round_num)
-        cur_streak = await cur_round_total_streak(games, round_num=round_num, total=total)
-        cur_streak2 = await cur_round_total_streak(games, round_num=round_num, total=total, cut=True)
+        cur_streak = await cur_round_total_streak(games, round_num=round_num)
+        cur_streak2 = await cur_round_total_streak(games, round_num=round_num, cut=True)
         logger.info(f'Текущая серия { cur_streak.total } { round_num }-го раунда = {cur_streak.streak}')
         logger.info(f'{cur_streak.streak=}')
         logger.info(f'{cur_streak2.streak=}')
-        if cur_streak.streak >= get_env_variables(total):
+        if cur_streak.streak >= get_env_variables(cur_streak.total):
             signals.append(f'Серия {cur_streak.total } в {round_num}-м раунде достигла {cur_streak.streak}❌\nhttps://t.me/statamk10/{last_game}')
 
-        elif cur_streak2.streak >= get_env_variables(total) and real_cur_streak.streak == 1:
+        elif cur_streak2.streak >= get_env_variables(cur_streak.total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
 
+'''
 @strategy
 async def strategytbb(last_games, all_games, all_games_rev):
-    '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     games = last_games
 
     total = 'TBB'
@@ -137,7 +135,6 @@ async def strategytbb(last_games, all_games, all_games_rev):
 
 @strategy
 async def strategytbbb(last_games, all_games, all_games_rev):
-    '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     games = last_games
 
     total = 'TBBB'
@@ -166,7 +163,6 @@ async def strategytbbb(last_games, all_games, all_games_rev):
 
 @strategy
 async def strategytm(last_games, all_games, all_games_rev):
-    '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     games = last_games
 
     total = 'TM'
@@ -194,7 +190,6 @@ async def strategytm(last_games, all_games, all_games_rev):
 
 @strategy
 async def strategytmm(last_games, all_games, all_games_rev):
-    '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     games = last_games
 
     total = 'TMM'
@@ -223,7 +218,6 @@ async def strategytmm(last_games, all_games, all_games_rev):
 
 @strategy
 async def strategytmmm(last_games, all_games, all_games_rev):
-    '''Текущая серия ТБ и ТМ 1-го раунда = 10'''
     games = last_games
 
     total = 'TMMM'
@@ -248,6 +242,7 @@ async def strategytmmm(last_games, all_games, all_games_rev):
         elif cur_streak2.streak >= get_env_variables(total) and real_cur_streak.streak == 1:
             signals.append(f'Серия {cur_streak2.total } из {cur_streak2.streak} в {round_num}-м раунде прервалась✅\nhttps://t.me/statamk10/{last_game}')
     return signals
+'''
 
 
 

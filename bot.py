@@ -46,7 +46,7 @@ async def set_bot_commands(dp):
         types.BotCommand("interrupt_stat_tbbb", "Статистика по перебивкам TBBB"),
         types.BotCommand("interrupt_stat_tm", "Статистика по перебивкам TM"),
         types.BotCommand("interrupt_stat_tmm", "Статистика по перебивкам TMM"),
-        types.BotCommand("interrupt_stat_tmmmm", "Статистика по перебивкам TMMM"),
+        types.BotCommand("interrupt_stat_tmmm", "Статистика по перебивкам TMMM"),
 
         types.BotCommand("max_f", "Макс. серия Фаталити"),
         types.BotCommand("max_nof", "Макс. серия НеФаталити"),
